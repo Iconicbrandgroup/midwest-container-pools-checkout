@@ -274,6 +274,25 @@
 
 </style>
 
+  <style id="playfair-embedded">
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(./assets/fonts/playfair-600-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(./assets/fonts/playfair-700-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+  </style>
+
   <!-- Tailwind Play CDN -->
   <script src="./assets/tailwind.js"></script>
   <script>
@@ -300,10 +319,12 @@
           },
           fontFamily: {
             sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+            display: ['Playfair Display', 'Georgia', 'ui-serif', 'serif'],
           },
           borderRadius: {
-            xl: '0.875rem',
-            '2xl': '1.125rem',
+            lg: '0.375rem',
+            xl: '0.375rem',
+            '2xl': '0.5rem',
           },
           boxShadow: {
             sm: '0 1px 2px 0 rgba(17,24,39,0.05)',
@@ -319,17 +340,44 @@
 
   <style>
     html, body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+    /* MCP display face — used for step titles and money figures */
+    .font-display { font-family: 'Playfair Display', Georgia, serif; letter-spacing: -0.01em; }
+    /* squared, industrial button treatment (vs Ready Pool's pill) */
+    .btn-mcp {
+      border-radius: 0.375rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-size: .82rem;
+      font-weight: 700;
+    }
+    /* corner check badge replaces the radio dot */
+    .pickcard { position: relative; }
+    .pickcard[data-selected="true"]::after {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      border-width: 0 26px 26px 0;
+      border-style: solid;
+      border-color: transparent #0891b2 transparent transparent;
+    }
+    .pickcard[data-selected="true"]::before {
+      content: '';
+      position: absolute; top: 4px; right: 3px; z-index: 1;
+      width: 9px; height: 5px;
+      border-left: 2px solid #fff; border-bottom: 2px solid #fff;
+      transform: rotate(-45deg);
+    }
     body { background: #ffffff; color: #0c1a27; }
     .tabular-nums { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
     .tracking-tight2 { letter-spacing: -0.02em; }
 
     /* Water gradient — bookends only (hero + thank-you) */
     .water-grad {
-      background-image: linear-gradient(120deg, #0e7490 0%, #0891b2 40%, #0891b2 100%);
+      background-color: #0c1a27;
+      background-image:
+        repeating-linear-gradient(90deg, rgba(255,255,255,.045) 0 2px, transparent 2px 22px),
+        linear-gradient(180deg, #0c1a27 0%, #12293c 100%);
     }
-    .rail-hairline {
-      background-image: linear-gradient(90deg, #0891b2 0%, #22d3ee 100%);
-    }
+    .rail-hairline { background-color: #0891b2; }
 
     /* Step transitions: forward slides in from right */
     .step-enter { animation: stepIn .28s cubic-bezier(.22,.61,.36,1) both; }
@@ -412,7 +460,7 @@
     <div class="relative z-10 mx-auto grid max-w-6xl grid-cols-1 items-center gap-8 px-5 pb-32 pt-10 sm:px-8 md:grid-cols-2 md:pb-16 md:pt-16">
       <!-- copy -->
       <div class="order-2 md:order-1 fade-rise">
-        <h1 class="max-w-xl text-4xl font-semibold tracking-tight2 text-white sm:text-5xl lg:text-6xl">
+        <h1 class="font-display max-w-xl text-4xl font-bold leading-[1.08] text-white sm:text-5xl lg:text-[3.4rem]">
           The USA's First<br class="hidden sm:block" /> Insulated Container Pool.
         </h1>
         <p class="mt-4 max-w-md text-base text-white/95 sm:text-lg">
@@ -422,7 +470,7 @@
           5-year structural warranty · Ships nationwide from Leavenworth, KS
         </p>
         <button id="openWizardBtn"
-          class="mt-7 inline-flex h-[52px] min-w-[200px] items-center justify-center gap-2 rounded-full bg-white px-7 text-base font-semibold text-brand-blue shadow-md transition hover:bg-white/90 active:scale-[.98]">
+          class="btn-mcp mt-8 inline-flex h-[54px] min-w-[230px] items-center justify-center gap-2 bg-brand-blue px-8 text-white shadow-md transition hover:bg-brand-blueDark active:translate-y-px">
           Order Now
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
@@ -467,19 +515,19 @@
       </div>
       <!-- segmented progress -->
       <div class="mx-auto max-w-6xl px-4 pb-2 sm:px-6">
-        <div id="progressSeg" class="flex gap-1" aria-hidden="true"></div>
+        <div id="progressSeg" class="flex items-center gap-2 sm:gap-3" aria-hidden="true"></div>
         <p id="progressReassure" class="mt-1.5 text-[11px] text-muted">Go back anytime — you won't be charged until you place your order.</p>
       </div>
     </header>
 
-    <div class="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 pb-40 pt-6 sm:px-6 md:grid-cols-[1fr_340px] md:pb-16 md:pt-8">
+    <div class="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 pb-40 pt-6 sm:px-6 md:grid-cols-[320px_1fr] md:pb-16 md:pt-8">
       <!-- ============ DECISION COLUMN ============ -->
-      <div class="mx-auto w-full max-w-decision md:mx-0">
+      <div class="order-2 mx-auto w-full max-w-decision md:mx-0">
         <div id="stepRoot"><!-- steps injected --></div>
       </div>
 
-      <!-- ============ DESKTOP STICKY SUMMARY RAIL ============ -->
-      <aside class="hidden md:block">
+      <!-- ============ DESKTOP STICKY SUMMARY RAIL (left column) ============ -->
+      <aside class="order-1 hidden md:block">
         <div class="sticky top-28">
           <div id="railCard" class="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
             <div class="rail-hairline h-1 w-full"></div>
@@ -670,11 +718,20 @@
 
   function setProgress(){
     const seg = document.getElementById('progressSeg');
+    const LABELS = ['Design', 'Delivery', 'Review', 'Payment'];
     seg.innerHTML = '';
     for (let i=1;i<=state.maxStep;i++){
-      const d = document.createElement('div');
-      d.className = 'h-1.5 flex-1 rounded-full transition-colors ' + (i <= state.step ? 'bg-brand-blue' : 'bg-line');
-      seg.appendChild(d);
+      const done = i < state.step, now = i === state.step;
+      const wrap = document.createElement('div');
+      wrap.className = 'flex flex-1 items-center gap-2 min-w-0';
+      wrap.innerHTML =
+        '<span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-[3px] text-[11px] font-bold ' +
+          (now ? 'bg-brand-blue text-white' : done ? 'bg-brand-blueDark text-white' : 'bg-line text-muted') +
+        '">' + (done ? '&#10003;' : i) + '</span>' +
+        '<span class="truncate text-[11px] font-semibold uppercase tracking-[.12em] ' +
+          (now ? 'text-ink' : 'text-muted') + '">' + LABELS[i-1] + '</span>' +
+        (i < state.maxStep ? '<span class="hidden h-px flex-1 bg-line sm:block"></span>' : '');
+      seg.appendChild(wrap);
     }
     document.getElementById('stepLabel').textContent = `Step ${state.step} of ${state.maxStep}`;
   }
@@ -684,16 +741,16 @@
   const noChargeLine = `<p class="mt-4 flex items-center justify-center gap-2 text-[12px] text-muted">${sunPip}<span>You won't be charged until you place your order.</span></p>`;
   function stepHeader(n, q, sub){
     return `
-      <div class="mb-6">
-        <p class="text-xs font-medium uppercase tracking-wide text-brand-blue">Step ${n} of ${state.maxStep}</p>
-        <h2 id="stepHeading" tabindex="-1" class="mt-1 text-2xl font-semibold tracking-tight2 text-ink outline-none">${q}</h2>
-        ${sub ? `<p class="mt-2 text-[15px] text-muted">${sub}</p>` : ''}
+      <div class="mb-7 border-b border-line pb-5">
+        <p class="text-[11px] font-bold uppercase tracking-[.18em] text-brand-blue">Step ${n} / ${state.maxStep}</p>
+        <h2 id="stepHeading" tabindex="-1" class="font-display mt-2 text-[30px] font-bold leading-tight text-ink outline-none">${q}</h2>
+        ${sub ? `<p class="mt-2 max-w-xl text-[15px] leading-6 text-muted">${sub}</p>` : ''}
       </div>`;
   }
   function continueBar(label, disabled, attrs=''){
     return `
       <div class="mt-8">
-        <button data-continue class="w-full inline-flex h-[52px] items-center justify-center gap-2 rounded-xl bg-brand-blue px-6 text-base font-semibold text-white shadow-sm transition hover:bg-brand-blueDark active:scale-[.99] disabled:opacity-40 disabled:cursor-not-allowed" ${disabled?'disabled':''} ${attrs}>
+        <button data-continue class="btn-mcp w-full inline-flex h-[54px] items-center justify-center gap-2 bg-brand-blue px-6 text-white shadow-sm transition hover:bg-brand-blueDark active:translate-y-px disabled:opacity-40 disabled:cursor-not-allowed" ${disabled?'disabled':''} ${attrs}>
           ${label}
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
@@ -718,13 +775,10 @@
 
     const installs = INSTALL_TYPES.map(t => `
       <button type="button" data-install="${t.id}" data-selected="${state.config.installType===t.id}"
-        class="selcard flex w-full items-start gap-3 rounded-xl border border-line bg-white p-4 text-left transition hover:shadow-sm focusable" aria-pressed="${state.config.installType===t.id}">
-        <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${state.config.installType===t.id?'border-brand-blue':'border-line'}">
-          <span class="h-2.5 w-2.5 rounded-full ${state.config.installType===t.id?'bg-brand-blue':'bg-transparent'}"></span>
-        </span>
+        class="selcard pickcard flex w-full items-start gap-3 border border-line bg-white p-4 text-left transition hover:shadow-sm focusable" aria-pressed="${state.config.installType===t.id}">
         <span>
-          <span class="block text-[15px] font-medium text-ink">${t.name}</span>
-          <span class="block text-[13px] text-muted">${t.note}</span>
+          <span class="block text-[15px] font-semibold text-ink">${t.name}</span>
+          <span class="mt-0.5 block text-[13px] text-muted">${t.note}</span>
         </span>
       </button>`).join('');
 
@@ -735,7 +789,7 @@
       const on = !!state.upgrades[u.id];
       return `
       <button type="button" data-upg="${u.id}" data-selected="${on}"
-        class="selcard group flex w-full items-center gap-4 overflow-hidden rounded-xl border border-line bg-white p-3 text-left transition hover:shadow-sm focusable" aria-pressed="${on}">
+        class="selcard pickcard group flex w-full items-center gap-4 overflow-hidden border border-line bg-white p-3 text-left transition hover:shadow-sm focusable" aria-pressed="${on}">
         <img src="${u.img}" alt="${u.name}" loading="lazy" class="h-20 w-28 shrink-0 rounded-lg bg-recessed object-cover sm:h-24 sm:w-36" onerror="this.style.display='none'" />
         <span class="min-w-0 flex-1">
           <span class="flex items-center justify-between gap-2">
@@ -744,15 +798,13 @@
           </span>
           <span class="mt-0.5 block text-[13px] text-muted">${u.benefit}</span>
         </span>
-        <span class="ml-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 ${on?'border-brand-blue bg-brand-blue':'border-line bg-white'}">
-          ${on?'<svg class="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true" focusable="false"><path d="m5 12 5 5 9-9"/></svg>':''}
-        </span>
+
       </button>`;
     }).join('');
 
     const noUpgradesCard = `
       <button type="button" data-noupg data-selected="${state.noUpgrades}"
-        class="selcard flex w-full items-center gap-4 rounded-xl border border-line bg-white p-3 text-left transition hover:shadow-sm focusable" aria-pressed="${state.noUpgrades}">
+        class="selcard pickcard flex w-full items-center gap-4 border border-line bg-white p-3 text-left transition hover:shadow-sm focusable" aria-pressed="${state.noUpgrades}">
         <span class="flex h-20 w-28 shrink-0 items-center justify-center rounded-lg bg-recessed sm:h-24 sm:w-36">
           <svg class="h-8 w-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>
         </span>
@@ -763,9 +815,7 @@
           </span>
           <span class="mt-0.5 block text-[13px] text-muted">Just the pool and its standard equipment — you can always add later.</span>
         </span>
-        <span class="ml-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 ${state.noUpgrades?'border-brand-blue bg-brand-blue':'border-line bg-white'}">
-          ${state.noUpgrades?'<svg class="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true" focusable="false"><path d="m5 12 5 5 9-9"/></svg>':''}
-        </span>
+
       </button>`;
 
     const model = currentModel();
@@ -773,7 +823,7 @@
       const on = m.id === state.config.model;
       return `
       <button type="button" role="radio" aria-checked="${on}" data-model="${m.id}" data-selected="${on}"
-        class="selcard flex w-full flex-col overflow-hidden rounded-xl border border-line bg-white text-left transition hover:shadow-sm focusable">
+        class="selcard pickcard flex w-full flex-col overflow-hidden border border-line bg-white text-left transition hover:shadow-sm focusable">
         <img src="${m.img}" alt="${m.name}" loading="lazy" class="h-28 w-full object-cover" onerror="this.style.display='none'" />
         <span class="flex flex-1 flex-col p-3">
           <span class="flex flex-wrap items-baseline justify-between gap-x-2">
@@ -801,7 +851,7 @@
         <div class="flex items-start justify-between gap-4">
           <div>
             <p class="text-[13px] font-medium text-muted">${model.name} · ${model.dims}</p>
-            <p class="mt-1 text-3xl font-semibold tabular-nums tracking-tight2 text-ink">${fmt(model.price)}</p>
+            <p class="font-display mt-1 text-[34px] font-bold tabular-nums text-ink">${fmt(model.price)}</p>
             <p class="mt-1 text-[12px] text-muted">Base price · every pool includes:</p>
           </div>
           <img src="${model.img}" alt="${model.name}" loading="lazy" class="h-20 w-28 rounded-xl object-cover" onerror="this.style.display='none'" />
@@ -943,10 +993,9 @@
       const on = state.delivery.fulfillment===id;
       return `
       <button type="button" data-fulfill="${id}" data-selected="${on}"
-        class="selcard flex w-full items-center justify-between gap-3 rounded-xl border border-line bg-white p-4 text-left transition hover:shadow-sm focusable" aria-pressed="${on}">
+        class="selcard pickcard flex w-full items-center justify-between gap-3 border border-line bg-white p-4 text-left transition hover:shadow-sm focusable" aria-pressed="${on}">
         <span class="flex items-start gap-3">
-          <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${on?'border-brand-blue':'border-line'}"><span class="h-2.5 w-2.5 rounded-full ${on?'bg-brand-blue':'bg-transparent'}"></span></span>
-          <span><span class="block text-[15px] font-medium text-ink">${title}</span><span class="block text-[13px] text-muted">${sub}</span></span>
+          <span><span class="block text-[15px] font-semibold text-ink">${title}</span><span class="mt-0.5 block text-[13px] text-muted">${sub}</span></span>
         </span>
         <span class="text-[14px] font-semibold tabular-nums ${price===0?'text-emerald-600':'text-ink'}">${price===0?'$0':fmt(price)}</span>
       </button>`;
@@ -1152,13 +1201,12 @@
       const sunPill = m.recommended ? `<span class="ml-2 rounded-full bg-brand-sun px-2 py-0.5 text-[10px] font-semibold text-ink">Recommended — no card fees</span>` : '';
       return `
       <div class="pm-card selcard rounded-xl border border-line bg-white transition" data-open="${on}" data-selected="${on}">
-        <button type="button" data-pm="${m.id}" class="flex w-full items-center gap-3 p-4 text-left focusable" aria-pressed="${on}">
-          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-line text-ink [&>svg]:h-5 [&>svg]:w-5">${m.icon}</span>
+        <button type="button" data-pm="${m.id}" class="flex w-full items-center gap-3 border-l-[3px] p-4 text-left focusable ${on?'border-l-brand-blue bg-[#eaf6fa]':'border-l-transparent'}" aria-pressed="${on}">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center border border-line text-ink [&>svg]:h-5 [&>svg]:w-5">${m.icon}</span>
           <span class="min-w-0 flex-1">
-            <span class="flex flex-wrap items-center text-[15px] font-medium text-ink">${m.name}${sunPill}</span>
+            <span class="flex flex-wrap items-center text-[15px] font-semibold text-ink">${m.name}${sunPill}</span>
             <span class="mt-0.5 block text-[13px] text-muted">${m.sub}</span>
           </span>
-          <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${on?'border-brand-blue':'border-line'}"><span class="h-2.5 w-2.5 rounded-full ${on?'bg-brand-blue':'bg-transparent'}"></span></span>
         </button>
         <div class="pm-panel"><div><div class="px-4 pb-4">${paymentPanel(m.id)}</div></div></div>
       </div>`;
