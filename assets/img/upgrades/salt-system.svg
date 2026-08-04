@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 260" width="360" height="260" role="img" aria-label="Salt Water Chlorination System">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#0891b2"/><stop offset="1" stop-color="#3d5a73"/>
+  </linearGradient></defs>
+  <rect width="360" height="260" rx="12" fill="url(#g)"/>
+  <rect x="120" y="140" width="120" height="60" rx="14" fill="#fff" opacity=".95"/><circle cx="150" cy="170" r="10" fill="#0891b2"/><circle cx="180" cy="170" r="10" fill="#22d3ee"/><circle cx="210" cy="170" r="10" fill="#0891b2"/><path d="M96 170h24M240 170h24" stroke="#fff" stroke-width="11" stroke-linecap="round"/>
+  <text x="180" y="228" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="600" fill="#ffffff">Salt Water</text>
+  <text x="180" y="248" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#ffffff" opacity=".85">Chlorination System</text>
+</svg>

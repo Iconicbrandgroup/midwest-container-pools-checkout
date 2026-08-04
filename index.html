@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Midwest Container Pools — Order Now</title>
+  <meta name="description" content="Order a Midwest Container Pool — the USA's first insulated container pool, built in Leavenworth, KS and delivered nationwide." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Cpath d='M12 38c8-7 16 7 24 0s12-4 16 0' fill='none' stroke='%23ffd349' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M14 27h36' stroke='white' stroke-width='7' stroke-linecap='round'/%3E%3C/svg%3E" />
+
+  <!-- ============================================================
+       Midwest Container Pools "Order Now" — self-service checkout
+       Single self-contained file. Tailwind + Inter, vanilla JS state machine.
+       Look/feel: "Still Water, Sunlit Deposit".
+       NOTE FOR ENGINEERING: the payment step hands off to the processor at
+       launch (Stripe/ACH). Card fields are front-end only; wire a PCI-compliant
+       processor (Stripe Elements/Checkout) and order persistence before taking
+       live customer payments.
+       ============================================================ -->
+
+  <!-- Inter -->
+  <style id="inter-embedded">
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(./assets/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+</style>
+
+  <!-- Tailwind Play CDN -->
+  <script src="./assets/tailwind.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              blue: '#0891b2',
+              blueDark: '#0e7490',
+              blueLight: '#22d3ee',
+              blueDeep: '#0c1a27',
+              cyan: '#0891b2',
+              cyanLight: '#22d3ee',
+              cyanDark: '#0891b2',
+              sun: '#fcbb00',
+              sun2: '#f99c00',
+            },
+            ink: '#0c1a27',
+            muted: '#6b7280',
+            line: '#dbe7ee',
+            surface: '#ffffff',
+            recessed: '#f4fafc',
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+          },
+          borderRadius: {
+            xl: '0.875rem',
+            '2xl': '1.125rem',
+          },
+          boxShadow: {
+            sm: '0 1px 2px 0 rgba(17,24,39,0.05)',
+            md: '0 4px 16px -2px rgba(17,24,39,0.10), 0 2px 6px -2px rgba(17,24,39,0.06)',
+          },
+          maxWidth: {
+            decision: '640px',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html, body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+    body { background: #ffffff; color: #0c1a27; }
+    .tabular-nums { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+    .tracking-tight2 { letter-spacing: -0.02em; }
+
+    /* Water gradient — bookends only (hero + thank-you) */
+    .water-grad {
+      background-image: linear-gradient(120deg, #0e7490 0%, #0891b2 40%, #0891b2 100%);
+    }
+    .rail-hairline {
+      background-image: linear-gradient(90deg, #0891b2 0%, #22d3ee 100%);
+    }
+
+    /* Step transitions: forward slides in from right */
+    .step-enter { animation: stepIn .28s cubic-bezier(.22,.61,.36,1) both; }
+    .step-enter-back { animation: stepInBack .28s cubic-bezier(.22,.61,.36,1) both; }
+    @keyframes stepIn { from { opacity: 0; transform: translateX(24px); } to { opacity:1; transform:none; } }
+    @keyframes stepInBack { from { opacity: 0; transform: translateX(-24px); } to { opacity:1; transform:none; } }
+
+    /* Hero -> wizard fade/rise */
+    .fade-rise { animation: fadeRise .5s cubic-bezier(.22,.61,.36,1) both; }
+    @keyframes fadeRise { from { opacity:0; transform: translateY(16px);} to {opacity:1; transform:none;} }
+    .fade-out { animation: fadeOut .35s ease both; }
+    @keyframes fadeOut { to { opacity:0; transform: translateY(-12px); } }
+
+    /* Summary line items slide+fade in */
+    .lineitem-in { animation: lineIn .18s ease both; }
+    @keyframes lineIn { from { opacity:0; transform: translateY(-4px);} to {opacity:1; transform:none;} }
+
+    /* Payment accordion */
+    .pm-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .25s ease, opacity .25s ease; opacity:0; }
+    .pm-panel > div { overflow: hidden; }
+    .pm-card[data-open="true"] .pm-panel { grid-template-rows: 1fr; opacity:1; }
+
+    /* generic accordion (terms / faq) */
+    .acc-panel { display:grid; grid-template-rows:0fr; transition: grid-template-rows .25s ease; }
+    .acc-panel > div { overflow:hidden; }
+    .acc[data-open="true"] .acc-panel { grid-template-rows: 1fr; }
+    .acc[data-open="true"] .acc-chev { transform: rotate(180deg); }
+    .acc-chev { transition: transform .2s ease; }
+
+    /* Count-up tick on price change */
+    .price-tick { animation: tick .2s ease; }
+    @keyframes tick { 0%{ transform: translateY(2px); opacity:.4;} 100%{ transform:none; opacity:1;} }
+
+    /* Mobile drawer */
+    #mobileDrawer { transition: transform .32s cubic-bezier(.22,.61,.36,1); transform: translateY(100%); }
+    #mobileDrawer.open { transform: translateY(0); }
+    #drawerScrim { transition: opacity .25s ease; }
+
+    /* focus rings (AA) */
+    .focusable:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid #0891b2; outline-offset: 2px; border-radius: 0.5rem;
+    }
+    /* radio/checkbox card selected */
+    .selcard[data-selected="true"] {
+      border-color: #0891b2;
+      box-shadow: 0 0 0 1px #0891b2, 0 0 0 4px rgba(37,99,235,0.12);
+      background: #eaf6fa;
+    }
+    .swatch[data-selected="true"] { box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #fcbb00; }
+
+    /* hide number spinners */
+    input[type=number]::-webkit-outer-spin-button, input[type=number]::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+    input[type=number]{ -webkit-appearance: textfield; -moz-appearance: textfield; appearance: textfield; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration:.001ms !important; transition-duration:.001ms !important; }
+    }
+    /* prevent body scroll under drawer */
+    body.drawer-open { overflow: hidden; }
+  </style>
+</head>
+
+<body class="min-h-screen antialiased">
+
+  <!-- ============================================================ HERO ============================================================ -->
+  <section id="hero" class="relative min-h-[100svh] water-grad overflow-hidden">
+    <!-- white scrim left->transparent so headline stays AA-legible -->
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-brand-blueDeep/45 via-brand-blue/10 to-transparent"></div>
+
+    <!-- top bar -->
+    <div class="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-5 pt-5 sm:px-8">
+      <img src="./assets/img/mcp-logo.png" alt="Midwest Container Pools"
+           class="h-9 w-auto rounded bg-white/95 px-2.5 py-1.5 shadow-sm sm:h-10" />
+      <a href="tel:+19137050591" class="inline-flex items-center gap-1.5 rounded-full bg-ink/40 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm transition hover:bg-ink/55 sm:text-sm">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        (913) 705-0591
+      </a>
+    </div>
+
+    <div class="relative z-10 mx-auto grid max-w-6xl grid-cols-1 items-center gap-8 px-5 pb-32 pt-10 sm:px-8 md:grid-cols-2 md:pb-16 md:pt-16">
+      <!-- copy -->
+      <div class="order-2 md:order-1 fade-rise">
+        <h1 class="max-w-xl text-4xl font-semibold tracking-tight2 text-white sm:text-5xl lg:text-6xl">
+          The USA's First<br class="hidden sm:block" /> Insulated Container Pool.
+        </h1>
+        <p class="mt-4 max-w-md text-base text-white/95 sm:text-lg">
+          Built in Kansas. Delivered nationwide. Swimming in 4–6 weeks.
+        </p>
+        <p class="mt-3 inline-flex max-w-md rounded-full bg-white/90 px-3 py-1.5 text-[12px] font-semibold text-ink shadow-sm">
+          5-year structural warranty · Ships nationwide from Leavenworth, KS
+        </p>
+        <button id="openWizardBtn"
+          class="mt-7 inline-flex h-[52px] min-w-[200px] items-center justify-center gap-2 rounded-full bg-white px-7 text-base font-semibold text-brand-blue shadow-md transition hover:bg-white/90 active:scale-[.98]">
+          Order Now
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+
+        <!-- frosted value-prop strip -->
+        <div class="mt-9 max-w-xl rounded-2xl border border-white/20 bg-white/10 p-3 backdrop-blur-sm">
+          <ul class="grid grid-cols-2 gap-x-4 gap-y-3 text-[13px] text-white/95 sm:flex sm:items-center sm:justify-between sm:gap-0">
+            <li class="flex items-center gap-2"><svg class="h-4 w-4 shrink-0 text-brand-cyanLight" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="9"/></svg>Self-serve in minutes</li>
+            <li class="flex items-center gap-2"><svg class="h-4 w-4 shrink-0 text-brand-cyanLight" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>$5,000 deposit today</li>
+            <li class="flex items-center gap-2"><svg class="h-4 w-4 shrink-0 text-brand-cyanLight" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Card &amp; ACH instant</li>
+            <li class="flex items-center gap-2"><svg class="h-4 w-4 shrink-0 text-brand-cyanLight" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>No pushy sales calls</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- pool render (the one saturated object) -->
+      <!-- Watermark-free brand photo. The Render Gallery webps carry a third-party
+           "Pool Studio" software watermark, so use a clean verified brand asset here
+           and on every configurator/summary thumbnail. -->
+      <div class="order-1 flex justify-center md:order-2 md:justify-end fade-rise">
+        <img src="./assets/img/pool-above-deck.jpg"
+             alt="A Midwest Container Pool installed above ground with composite decking"
+             fetchpriority="high" width="1024" height="768"
+             class="w-full max-w-md rounded-2xl shadow-md md:max-w-lg" style="aspect-ratio:4/3;object-fit:cover" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ WIZARD APP ============================================================ -->
+  <main id="app" class="hidden">
+    <!-- sticky compact header: logo + phone + progress -->
+    <header class="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+        <img src="./assets/img/mcp-logo.png" alt="Midwest Container Pools" class="h-7 w-auto sm:h-8" />
+        <div class="flex items-center gap-4">
+          <span id="stepLabel" class="text-xs font-medium text-muted tabular-nums">Step 1 of 4</span>
+          <a href="tel:+19137050591" class="inline-flex items-center gap-1.5 text-xs font-medium text-brand-blue hover:text-brand-blueDark sm:text-sm">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span class="hidden sm:inline">(913) 705-0591</span>
+          </a>
+        </div>
+      </div>
+      <!-- segmented progress -->
+      <div class="mx-auto max-w-6xl px-4 pb-2 sm:px-6">
+        <div id="progressSeg" class="flex gap-1" aria-hidden="true"></div>
+        <p id="progressReassure" class="mt-1.5 text-[11px] text-muted">Go back anytime — you won't be charged until you place your order.</p>
+      </div>
+    </header>
+
+    <div class="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 pb-40 pt-6 sm:px-6 md:grid-cols-[1fr_340px] md:pb-16 md:pt-8">
+      <!-- ============ DECISION COLUMN ============ -->
+      <div class="mx-auto w-full max-w-decision md:mx-0">
+        <div id="stepRoot"><!-- steps injected --></div>
+      </div>
+
+      <!-- ============ DESKTOP STICKY SUMMARY RAIL ============ -->
+      <aside class="hidden md:block">
+        <div class="sticky top-28">
+          <div id="railCard" class="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
+            <div class="rail-hairline h-1 w-full"></div>
+            <div class="p-5" id="railBody"><!-- summary injected --></div>
+          </div>
+          <!-- footer safety net -->
+          <div class="mt-3 flex items-center justify-between px-1 text-[11px] text-muted">
+            <a href="tel:+19137050591" class="hover:text-ink">Call (913) 705-0591</a>
+            <button class="chatBtn hover:text-ink">Questions? Chat</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- ============ MOBILE BOTTOM BAR ============ -->
+    <div id="mobileBar" class="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 px-4 py-3 shadow-md backdrop-blur md:hidden">
+      <div class="mx-auto flex max-w-md items-center justify-between">
+        <div class="leading-tight">
+          <div class="text-[11px] text-muted">Deposit today</div>
+          <div class="text-lg font-semibold tabular-nums text-ink">$5,000</div>
+          <div class="text-[11px] text-muted tabular-nums">Order <span id="mobileBarSubtotal" data-anim="mobileSub" class="font-medium text-ink">$5,000</span></div>
+        </div>
+        <button id="viewOrderBtn" class="inline-flex items-center gap-1.5 rounded-xl border border-line bg-recessed px-4 py-2.5 text-sm font-medium text-ink active:scale-[.98]">
+          View order
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============ MOBILE DRAWER (summary) ============ -->
+  <div id="drawerScrim" class="fixed inset-0 z-40 hidden bg-ink/40 md:hidden"></div>
+  <div id="mobileDrawer" class="fixed inset-x-0 bottom-0 z-50 max-h-[85svh] overflow-y-auto rounded-t-2xl border-t border-line bg-white shadow-md md:hidden" role="dialog" aria-modal="true" aria-label="Order summary">
+    <div class="sticky top-0 flex items-center justify-between border-b border-line bg-white px-5 pb-3 pt-4">
+      <div class="mx-auto h-1.5 w-10 rounded-full bg-line absolute left-1/2 top-2 -translate-x-1/2"></div>
+      <h2 class="text-base font-semibold text-ink">Order summary</h2>
+      <button id="closeDrawerBtn" class="rounded-lg p-1.5 text-muted hover:bg-recessed" aria-label="Close">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div id="drawerBody" class="p-5"><!-- summary mirror --></div>
+  </div>
+
+  <!-- ============ CHAT (safety net, non-blocking) ============ -->
+  <div id="chatPop" class="fixed bottom-24 right-4 z-[55] hidden w-72 rounded-2xl border border-line bg-white p-4 shadow-md md:bottom-6">
+    <div class="flex items-start justify-between">
+      <div class="flex items-center gap-2">
+        <span class="flex h-8 w-8 items-center justify-center rounded-full water-grad text-white text-xs font-semibold">RP</span>
+        <div class="leading-tight">
+          <p class="text-sm font-semibold text-ink">Midwest Container Pools</p>
+          <p class="text-[11px] text-emerald-600">● Typically replies fast</p>
+        </div>
+      </div>
+      <button class="chatBtn rounded p-1 text-muted hover:bg-recessed" aria-label="Close chat"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <p class="mt-3 rounded-xl bg-recessed p-3 text-[13px] text-ink">Hi! Our self-serve checkout is open 24/7. Prefer to talk to a person? Call <a href="tel:+19137050591" class="font-medium text-brand-blue">(913) 705-0591</a> and we'll help you order.</p>
+  </div>
+
+  <script>
+  /* ============================================================
+     MIDWEST CONTAINER POOLS CHECKOUT — STATE MACHINE & PRICING
+     ============================================================ */
+
+  // ---- PRICING (from midwestcontainerpools.com, 2026-08-04) ----
+  // Two models; the selected model drives every total on the page.
+  const MODELS = [
+    { id:'20ft', name:'20ft Container Pool', dims:"20' x 8' x 4'", price:46440,
+      blurb:'The compact powerhouse - fits almost any backyard.',
+      img:'./assets/img/pool-above-deck.jpg' },
+    { id:'40ft', name:'40ft with Tanning Ledge', dims:"40' x 8' x 4'", price:68790,
+      blurb:'Double the swim space, plus a built-in tanning ledge with integrated steps.',
+      img:'./assets/img/pool-hero.jpg' },
+  ];
+  const currentModel = () => MODELS.find(m => m.id === state.config.model) || MODELS[0];
+  const basePrice = () => currentModel().price;
+  const DEPOSIT = 5000;              // FLAGGED: MCP publishes no deposit figure - confirm with Sheldon
+  // MCP advertises a fully customizable exterior with no color fee, so color is $0.
+  const STD_COLOR_FEE = 0;
+  const CUSTOM_COLOR_FEE = 0;        // custom color included (FLAGGED for Sheldon)
+  const SHIP_RATE_PER_MILE = 4.85;   // Sheldon's rate; broker runs ~$4.00 and he keeps the spread
+  const ORIGIN_ZIP = '66048';        // Leavenworth, KS facility
+  const CARD_FEE_APPROX = 150;       // ~3% of deposit, shown as advisory
+  // Terms & Conditions document (client edit #8). Content is IBG-drafted from
+  // midwestcontainerpools.com and must be confirmed/replaced by Midwest
+  // Container Pools' own legal copy — swap the file and the link follows.
+  const TERMS_URL = './assets/terms/Midwest-Container-Pools-Terms-and-Conditions.pdf';
+
+  // Add-ons and prices from midwestcontainerpools.com/pricing. Tiles are
+  // MCP-branded placeholders until Sheldon supplies product photography.
+  const UPGRADES = [
+    { id:'heat-pump', name:'Cold Weather Electric Heat Pump', price:4656, benefit:'Swim comfortably in cooler months - the foam insulation holds 95%+ of the heat.', img:'./assets/img/upgrades/heat-pump.svg' },
+    { id:'gas-heater', name:'Propane or Natural Gas Heater', price:3154, benefit:'Fastest heat-up - on-demand warmth whenever you want it.', img:'./assets/img/upgrades/gas-heater.svg' },
+    { id:'salt', name:'Salt Water Chlorination System', price:1977, benefit:'Softer water, less chlorine handling, lower upkeep.', img:'./assets/img/upgrades/salt-system.svg' },
+  ];
+
+  // MCP offers three installation options (above / in-ground / partially buried).
+  const INSTALL_TYPES = [
+    { id:'above',      name:'Above-ground',     note:'Plug-and-play on 4 inches of compacted gravel - swim the same day.' },
+    { id:'in-ground',  name:'In-ground',        note:'Set level with the deck or patio (excavation required).' },
+    { id:'partial',    name:'Partially buried', note:'Ideal for slopes and hillsides.' },
+  ];
+
+  const STD_COLORS = [
+    { id:'slate',    name:'Slate Gray',  hex:'#3d5a73' },
+    { id:'charcoal', name:'Charcoal',    hex:'#2b3440' },
+    { id:'sand',     name:'Sandstone',   hex:'#d9c9ad' },
+    { id:'white',    name:'Cloud White', hex:'#f1f4f6' },
+  ];
+
+  const PAYMENT_METHODS = [
+    { id:'ach',       name:'ACH bank transfer', sub:'Direct from your bank — no card fees.', manual:false, recommended:true,
+      icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><path d="M3 21h18M5 21V10m4 11V10m6 11V10m4 11V10M12 3 3 8h18l-9-5z"/></svg>' },
+    { id:'card',      name:'Credit / Debit card', sub:'Charged today — instant build confirmation.', manual:false,
+      icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>' },
+    { id:'zelle',     name:'Zelle', sub:'Manual send — daily limits may apply.', manual:true,
+      icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><path d="M12 2v3m0 14v3M5 7l2 2m10 8 2 2M2 12h3m14 0h3M7 17l-2 2M19 5l-2 2"/></svg>' },
+    { id:'wire',      name:'Bank wire', sub:'Manual transfer with routing details.', manual:true,
+      icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18z"/></svg>' },
+    { id:'check',     name:'Mailed check', sub:'Mail a check with the memo reference.', manual:true,
+      icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h6M6 14h3"/></svg>' },
+    { id:'financing', name:'Financing', sub:'Apply with HFS Financial - no home equity required.', manual:true, external:true,
+      icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><path d="M3 6h18v12H3z"/><circle cx="12" cy="12" r="2.5"/></svg>' },
+  ];
+
+  // ---- STATE ----
+  const state = {
+    step: 1,
+    maxStep: 4,
+    config: { model: '20ft', installType: null, color: null, customHex: '' },
+    upgrades: {}, // id -> true
+    noUpgrades: false, // explicit "No upgrades" selection (client-requested option)
+    delivery: { zip:'', address:'', name:'', phone:'', email:'', siteNotes:'', fulfillment:'delivery' },
+    shipping: { estimateAmount: 0, distanceMiles: 0 },
+    payment: { method: null, achLinked: false },
+    consent: { termsAccepted:false },
+    order: null,
+    dir: 'fwd',
+  };
+
+  // ---- ESCAPING (user-sourced strings are re-rendered into innerHTML on every repaint) ----
+  const escapeHtml = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Attribute-context escape: also neutralize the quotes that delimit value="..." so a
+  // name/address/hex containing " or ' (or 5'6") can't break out or get truncated.
+  const escAttr = s => escapeHtml(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+
+  // ---- MONEY HELPERS ----
+  const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+  const HEX_RE = /^#[0-9a-fA-F]{6}$/;
+  // A custom color only becomes billable once a valid hex is entered, so the
+  // +$499 line and the subtotal stay in sync while the user is mid-typing an
+  // invalid value. (Step 1 already blocks advancing until the hex is valid.)
+  const customColorBillable = () => state.config.color === 'custom' && HEX_RE.test(state.config.customHex);
+  // Every color choice carries a charge: $399 for any of the four standard
+  // finishes, $499 for custom. No color selected yet -> no fee yet.
+  function colorFee(){
+    if (state.config.color === 'custom') return customColorBillable() ? CUSTOM_COLOR_FEE : 0;
+    return state.config.color ? STD_COLOR_FEE : 0;
+  }
+  function subtotal(){
+    let s = basePrice() + colorFee();
+    UPGRADES.forEach(u => { if (state.upgrades[u.id]) s += u.price; });
+    return s;
+  }
+  function balance(){ return Math.max(0, subtotal() - DEPOSIT); }
+
+  // ---- SHIPPING SIM (would be a server-side driving-distance call to protect the API key) ----
+  function estimateShipping(zip){
+    if (!/^\d{5}$/.test(zip)) return { miles:0, amount:0 };
+    // Deterministic plausible "distance" from the Leavenworth KS origin 66048.
+    // Monotonic mapping (no modulo wraparound): the larger the ZIP delta, the
+    // larger the distance, scaled into a believable 50-1400 mile range. This keeps
+    // a genuinely far ZIP from collapsing to an implausibly small mileage.
+    const z = parseInt(zip,10);
+    const origin = parseInt(ORIGIN_ZIP,10);
+    const raw = Math.abs(z - origin);
+    // US ZIP codes span ~00501-99950, so the max delta from 66048 is ~66400.
+    const MAX_DELTA = 66400;
+    const frac = Math.min(1, raw / MAX_DELTA);
+    let miles = Math.round(50 + frac * 1350);
+    const amount = Math.round(miles * SHIP_RATE_PER_MILE);
+    return { miles, amount };
+  }
+
+  /* ============================================================
+     RENDERING
+     ============================================================ */
+  const stepRoot = () => document.getElementById('stepRoot');
+
+  function setProgress(){
+    const seg = document.getElementById('progressSeg');
+    seg.innerHTML = '';
+    for (let i=1;i<=state.maxStep;i++){
+      const d = document.createElement('div');
+      d.className = 'h-1.5 flex-1 rounded-full transition-colors ' + (i <= state.step ? 'bg-brand-blue' : 'bg-line');
+      seg.appendChild(d);
+    }
+    document.getElementById('stepLabel').textContent = `Step ${state.step} of ${state.maxStep}`;
+  }
+
+  // shared bits
+  const sunPip = `<span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-sun align-middle"></span>`;
+  const noChargeLine = `<p class="mt-4 flex items-center justify-center gap-2 text-[12px] text-muted">${sunPip}<span>You won't be charged until you place your order.</span></p>`;
+  function stepHeader(n, q, sub){
+    return `
+      <div class="mb-6">
+        <p class="text-xs font-medium uppercase tracking-wide text-brand-blue">Step ${n} of ${state.maxStep}</p>
+        <h2 id="stepHeading" tabindex="-1" class="mt-1 text-2xl font-semibold tracking-tight2 text-ink outline-none">${q}</h2>
+        ${sub ? `<p class="mt-2 text-[15px] text-muted">${sub}</p>` : ''}
+      </div>`;
+  }
+  function continueBar(label, disabled, attrs=''){
+    return `
+      <div class="mt-8">
+        <button data-continue class="w-full inline-flex h-[52px] items-center justify-center gap-2 rounded-xl bg-brand-blue px-6 text-base font-semibold text-white shadow-sm transition hover:bg-brand-blueDark active:scale-[.99] disabled:opacity-40 disabled:cursor-not-allowed" ${disabled?'disabled':''} ${attrs}>
+          ${label}
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        ${noChargeLine}
+      </div>`;
+  }
+  function backBtn(){
+    return state.step > 1
+      ? `<button data-back class="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-muted hover:text-ink"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="m15 18-6-6 6-6"/></svg>Back</button>`
+      : '';
+  }
+
+  /* -------- STEP 1: DESIGN (configure + color + upgrades on one page) -------- */
+  function renderStep1(){
+    const colors = STD_COLORS.map(c => `
+      <button type="button" data-color="${c.id}" data-selected="${state.config.color===c.id}"
+        class="swatch group flex flex-col items-center gap-2 rounded-xl border border-line bg-white p-3 transition hover:shadow-sm focusable" aria-pressed="${state.config.color===c.id}">
+        <span class="h-9 w-9 rounded-full border border-line" style="background:${c.hex}"></span>
+        <span class="text-[12px] font-medium text-ink">${c.name}</span>
+        <span class="text-[11px] font-semibold text-muted">${STD_COLOR_FEE ? '+'+fmt(STD_COLOR_FEE) : 'Included'}</span>
+      </button>`).join('');
+
+    const installs = INSTALL_TYPES.map(t => `
+      <button type="button" data-install="${t.id}" data-selected="${state.config.installType===t.id}"
+        class="selcard flex w-full items-start gap-3 rounded-xl border border-line bg-white p-4 text-left transition hover:shadow-sm focusable" aria-pressed="${state.config.installType===t.id}">
+        <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${state.config.installType===t.id?'border-brand-blue':'border-line'}">
+          <span class="h-2.5 w-2.5 rounded-full ${state.config.installType===t.id?'bg-brand-blue':'bg-transparent'}"></span>
+        </span>
+        <span>
+          <span class="block text-[15px] font-medium text-ink">${t.name}</span>
+          <span class="block text-[13px] text-muted">${t.note}</span>
+        </span>
+      </button>`).join('');
+
+    const isCustom = state.config.color === 'custom';
+    const hexValid = /^#[0-9a-fA-F]{6}$/.test(state.config.customHex);
+
+    const upgradeCards = UPGRADES.map(u => {
+      const on = !!state.upgrades[u.id];
+      return `
+      <button type="button" data-upg="${u.id}" data-selected="${on}"
+        class="selcard group flex w-full items-center gap-4 overflow-hidden rounded-xl border border-line bg-white p-3 text-left transition hover:shadow-sm focusable" aria-pressed="${on}">
+        <img src="${u.img}" alt="${u.name}" loading="lazy" class="h-20 w-28 shrink-0 rounded-lg bg-recessed object-cover sm:h-24 sm:w-36" onerror="this.style.display='none'" />
+        <span class="min-w-0 flex-1">
+          <span class="flex items-center justify-between gap-2">
+            <span class="text-[15px] font-medium text-ink">${u.name}</span>
+            <span class="text-[14px] font-semibold tabular-nums text-ink">+${fmt(u.price)}</span>
+          </span>
+          <span class="mt-0.5 block text-[13px] text-muted">${u.benefit}</span>
+        </span>
+        <span class="ml-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 ${on?'border-brand-blue bg-brand-blue':'border-line bg-white'}">
+          ${on?'<svg class="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true" focusable="false"><path d="m5 12 5 5 9-9"/></svg>':''}
+        </span>
+      </button>`;
+    }).join('');
+
+    const noUpgradesCard = `
+      <button type="button" data-noupg data-selected="${state.noUpgrades}"
+        class="selcard flex w-full items-center gap-4 rounded-xl border border-line bg-white p-3 text-left transition hover:shadow-sm focusable" aria-pressed="${state.noUpgrades}">
+        <span class="flex h-20 w-28 shrink-0 items-center justify-center rounded-lg bg-recessed sm:h-24 sm:w-36">
+          <svg class="h-8 w-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>
+        </span>
+        <span class="min-w-0 flex-1">
+          <span class="flex items-center justify-between gap-2">
+            <span class="text-[15px] font-medium text-ink">No upgrades</span>
+            <span class="text-[14px] font-semibold tabular-nums text-ink">$0</span>
+          </span>
+          <span class="mt-0.5 block text-[13px] text-muted">Just the pool and its standard equipment — you can always add later.</span>
+        </span>
+        <span class="ml-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 ${state.noUpgrades?'border-brand-blue bg-brand-blue':'border-line bg-white'}">
+          ${state.noUpgrades?'<svg class="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true" focusable="false"><path d="m5 12 5 5 9-9"/></svg>':''}
+        </span>
+      </button>`;
+
+    const model = currentModel();
+    const modelCards = MODELS.map(m => {
+      const on = m.id === state.config.model;
+      return `
+      <button type="button" role="radio" aria-checked="${on}" data-model="${m.id}" data-selected="${on}"
+        class="selcard flex w-full flex-col overflow-hidden rounded-xl border border-line bg-white text-left transition hover:shadow-sm focusable">
+        <img src="${m.img}" alt="${m.name}" loading="lazy" class="h-28 w-full object-cover" onerror="this.style.display='none'" />
+        <span class="flex flex-1 flex-col p-3">
+          <span class="flex flex-wrap items-baseline justify-between gap-x-2">
+            <span class="text-[15px] font-medium text-ink">${m.name}</span>
+            <span class="shrink-0 text-[14px] font-semibold tabular-nums text-ink">${fmt(m.price)}</span>
+          </span>
+          <span class="mt-0.5 text-[12px] text-muted">${m.dims}</span>
+          <span class="mt-1 text-[13px] text-muted">${m.blurb}</span>
+        </span>
+      </button>`;
+    }).join('');
+
+    stepRoot().innerHTML = `
+      ${backBtn()}
+      ${stepHeader(1, 'Design your pool', 'Insulated, plug-and-play, and built in Kansas. Configure everything here.')}
+
+      <!-- model choice (MCP sells two sizes) -->
+      <fieldset>
+        <legend class="text-[15px] font-semibold text-ink">Choose your size</legend>
+        <div role="radiogroup" aria-label="Pool model" class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">${modelCards}</div>
+      </fieldset>
+
+      <!-- price anchor + what's included -->
+      <div class="mt-6 rounded-2xl border border-line bg-recessed p-5">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-[13px] font-medium text-muted">${model.name} · ${model.dims}</p>
+            <p class="mt-1 text-3xl font-semibold tabular-nums tracking-tight2 text-ink">${fmt(model.price)}</p>
+            <p class="mt-1 text-[12px] text-muted">Base price · every pool includes:</p>
+          </div>
+          <img src="${model.img}" alt="${model.name}" loading="lazy" class="h-20 w-28 rounded-xl object-cover" onerror="this.style.display='none'" />
+        </div>
+        <ul class="mt-2 grid grid-cols-1 gap-x-4 gap-y-1 text-[12.5px] text-muted sm:grid-cols-2">
+          <li class="flex items-center gap-1.5"><span class="h-1 w-1 shrink-0 rounded-full bg-brand-cyanDark"></span>Fiberglass liner in classic blue</li>
+          <li class="flex items-center gap-1.5"><span class="h-1 w-1 shrink-0 rounded-full bg-brand-cyanDark"></span>Hayward cartridge filter &amp; pump</li>
+          <li class="flex items-center gap-1.5"><span class="h-1 w-1 shrink-0 rounded-full bg-brand-cyanDark"></span>Pentair LED lighting</li>
+          <li class="flex items-center gap-1.5"><span class="h-1 w-1 shrink-0 rounded-full bg-brand-cyanDark"></span>Two skimmers &amp; two returns</li>
+          <li class="flex items-center gap-1.5"><span class="h-1 w-1 shrink-0 rounded-full bg-brand-cyanDark"></span>Composite decking around the edge</li>
+          <li class="flex items-center gap-1.5"><span class="h-1 w-1 shrink-0 rounded-full bg-brand-cyanDark"></span>High-density foam insulation</li>
+        </ul>
+        <p class="mt-3 flex items-center gap-2 border-t border-line pt-3 text-[13px] text-muted">
+          <svg class="h-4 w-4 text-brand-cyanDark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5l-8-3z"/><path d="m9 12 2 2 4-4"/></svg>
+          5-year structural · 3-year equipment warranty
+        </p>
+      </div>
+
+      <!-- install type -->
+      <fieldset class="mt-7">
+        <legend class="text-[15px] font-semibold text-ink">Installation type</legend>
+        <p class="mb-3 text-[13px] text-muted">No price change — this guides your site prep. Above-ground is plug-and-play on 4 inches of compacted gravel; in-ground and partially buried installs need excavation arranged by a local professional.</p>
+        <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2">${installs}</div>
+      </fieldset>
+
+      <!-- color -->
+      <fieldset class="mt-7">
+        <legend class="text-[15px] font-semibold text-ink">Exterior color</legend>
+        <p class="mb-3 text-[13px] text-muted">Your exterior is fully customizable and included in the price — pick a finish below, or choose a custom color.</p>
+        <div class="grid grid-cols-4 gap-2.5">${colors}</div>
+
+        <button type="button" data-color="custom" data-selected="${isCustom}"
+          class="selcard mt-3 flex w-full items-center justify-between rounded-xl border border-line bg-white p-4 text-left transition hover:shadow-sm focusable" aria-pressed="${isCustom}">
+          <span class="flex items-center gap-3">
+            <span class="flex h-5 w-5 items-center justify-center rounded-full border-2 ${isCustom?'border-brand-blue':'border-line'}"><span class="h-2.5 w-2.5 rounded-full ${isCustom?'bg-brand-blue':'bg-transparent'}"></span></span>
+            <span class="text-[15px] font-medium text-ink">Custom color</span>
+          </span>
+          <span class="text-[14px] font-semibold text-ink">${CUSTOM_COLOR_FEE ? '+'+fmt(CUSTOM_COLOR_FEE) : 'Included'}</span>
+        </button>
+
+        <!-- Custom-color hex input: plain hidden/shown block (the .acc-panel grid-collapse
+             pattern only expands under an .acc[data-open] ancestor, which this fieldset is not). -->
+        <div class="${isCustom?'':'hidden'}" id="hexWrap">
+          <div class="mt-3 rounded-xl border border-line bg-recessed p-4">
+            <label for="hexInput" class="block text-[13px] font-medium text-ink">Hex color (#RRGGBB)</label>
+            <div class="mt-2 flex items-center gap-3">
+              <input id="hexInput" type="text" inputmode="text" autocomplete="off" maxlength="7" placeholder="#1e90ff"
+                value="${escAttr(state.config.customHex)}"
+                class="w-40 rounded-xl border border-line bg-white px-3 py-2.5 text-[15px] tabular-nums text-ink focusable" />
+              <span id="hexChip" class="h-10 w-10 rounded-xl border border-line" style="background:${hexValid?state.config.customHex:'#ffffff'}"></span>
+              <span id="hexMsg" class="text-[12px] ${hexValid?'text-emerald-600':'text-muted'}">${state.config.customHex ? (hexValid?'Looks good':'Use format #RRGGBB') : 'Live preview'}</span>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- upgrades (client edit: on the same page as exterior colors, Tesla-style) -->
+      <fieldset class="mt-7">
+        <legend class="text-[15px] font-semibold text-ink">Upgrades</legend>
+        <p class="mb-3 text-[13px] text-muted">Optional equipment — add any combination, or choose No upgrades.</p>
+        <div class="grid grid-cols-1 gap-3">${upgradeCards}${noUpgradesCard}</div>
+      </fieldset>
+
+      <p id="gateMsg" role="alert" class="mt-6 hidden text-[13px] text-rose-600"></p>
+      ${continueBar('Continue to delivery & shipping', false)}
+    `;
+
+    // wire upgrades + the explicit "No upgrades" card (mutually exclusive)
+    stepRoot().querySelectorAll('[data-upg]').forEach(b => b.addEventListener('click', () => {
+      const id = b.getAttribute('data-upg');
+      state.upgrades[id] = !state.upgrades[id];
+      if (state.upgrades[id]) state.noUpgrades = false;
+      repaint(`[data-upg="${id}"]`);
+    }));
+    const noUpg = stepRoot().querySelector('[data-noupg]');
+    if (noUpg) noUpg.addEventListener('click', () => {
+      state.noUpgrades = !state.noUpgrades;
+      if (state.noUpgrades) state.upgrades = {};
+      repaint('[data-noupg]');
+    });
+
+    // wire model (drives the base price and every total)
+    stepRoot().querySelectorAll('[data-model]').forEach(b => b.addEventListener('click', () => {
+      const id = b.getAttribute('data-model');
+      state.config.model = id;
+      repaint(`[data-model="${id}"]`);
+    }));
+
+    // wire color
+    stepRoot().querySelectorAll('[data-color]').forEach(b => b.addEventListener('click', () => {
+      const id = b.getAttribute('data-color');
+      state.config.color = id;
+      if (state.config.color !== 'custom') state.config.customHex = '';
+      repaint(`[data-color="${id}"]`);
+    }));
+    // wire install
+    stepRoot().querySelectorAll('[data-install]').forEach(b => b.addEventListener('click', () => {
+      const id = b.getAttribute('data-install');
+      state.config.installType = id;
+      repaint(`[data-install="${id}"]`);
+    }));
+    // hex
+    const hexInput = document.getElementById('hexInput');
+    if (hexInput){
+      hexInput.addEventListener('input', e => {
+        let v = e.target.value.trim();
+        if (v && !v.startsWith('#')) v = '#' + v;
+        state.config.customHex = v;
+        const ok = /^#[0-9a-fA-F]{6}$/.test(v);
+        document.getElementById('hexChip').style.background = ok ? v : '#ffffff';
+        const msg = document.getElementById('hexMsg');
+        msg.textContent = v ? (ok?'Looks good':'Use format #RRGGBB') : 'Live preview';
+        msg.className = 'text-[12px] ' + (ok?'text-emerald-600':'text-muted');
+        renderSummary();
+      });
+    }
+  }
+
+  function validateStep1(){
+    const msg = document.getElementById('gateMsg');
+    const customOk = state.config.color !== 'custom' || /^#[0-9a-fA-F]{6}$/.test(state.config.customHex);
+    let err = '';
+    if (!state.config.installType) err = 'Please choose an installation type.';
+    else if (!state.config.color) err = 'Please choose an exterior color.';
+    else if (!customOk) err = 'Enter a valid hex color (#RRGGBB) for your custom color, or pick a standard color.';
+    if (err){ msg.textContent = err; msg.classList.remove('hidden'); return false; }
+    msg.classList.add('hidden');
+    return true;
+  }
+
+  /* -------- STEP 2: DELIVERY & SHIPPING (all shipping collection on one page) -------- */
+  function renderStep2(){
+    const d = state.delivery;
+    const hasZip = /^\d{5}$/.test(state.delivery.zip);
+    const ship = estimateShipping(state.delivery.zip);
+    state.shipping = { estimateAmount: ship.amount, distanceMiles: ship.miles };
+
+    const opt = (id,title,sub,price) => {
+      const on = state.delivery.fulfillment===id;
+      return `
+      <button type="button" data-fulfill="${id}" data-selected="${on}"
+        class="selcard flex w-full items-center justify-between gap-3 rounded-xl border border-line bg-white p-4 text-left transition hover:shadow-sm focusable" aria-pressed="${on}">
+        <span class="flex items-start gap-3">
+          <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${on?'border-brand-blue':'border-line'}"><span class="h-2.5 w-2.5 rounded-full ${on?'bg-brand-blue':'bg-transparent'}"></span></span>
+          <span><span class="block text-[15px] font-medium text-ink">${title}</span><span class="block text-[13px] text-muted">${sub}</span></span>
+        </span>
+        <span class="text-[14px] font-semibold tabular-nums ${price===0?'text-emerald-600':'text-ink'}">${price===0?'$0':fmt(price)}</span>
+      </button>`;
+    };
+
+    stepRoot().innerHTML = `
+      ${backBtn()}
+      ${stepHeader(2, 'Delivery &amp; shipping', 'Everything about getting your pool to you — on one page.')}
+
+      <!-- ZIP confirm -->
+      <div class="rounded-2xl border border-line bg-white p-5">
+        <label for="zip3" class="block text-[13px] font-medium text-ink">Destination ZIP</label>
+        <div class="mt-1.5 flex items-center gap-3">
+          <input id="zip3" type="text" inputmode="numeric" maxlength="5" autocomplete="postal-code" value="${escAttr(state.delivery.zip)}"
+            class="w-40 rounded-xl border border-line bg-white px-3 py-2.5 text-[15px] tabular-nums text-ink focusable" />
+          <button id="recalcBtn" type="button" class="rounded-xl border border-line bg-recessed px-4 py-2.5 text-sm font-medium text-ink hover:shadow-sm focusable">Estimate</button>
+        </div>
+
+        <!-- shipping estimate (non-binding, NOT in total) -->
+        <div class="mt-4 rounded-xl bg-recessed p-4" id="shipEstimate">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <p class="flex items-center gap-2 text-[13px] font-medium text-ink">
+                Delivery from Leavenworth, KS
+                <span class="rounded-full border border-line bg-white px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted">non-binding estimate</span>
+              </p>
+              <p class="mt-0.5 text-[12px] text-muted tabular-nums" id="shipMeta">${hasZip ? `~${ship.miles.toLocaleString()} mi · $${SHIP_RATE_PER_MILE.toFixed(2)}/mi` : `Enter a 5-digit ZIP · $${SHIP_RATE_PER_MILE.toFixed(2)}/mi`}</p>
+            </div>
+            <p class="text-2xl font-semibold tabular-nums text-ink" id="shipAmt">${hasZip ? fmt(ship.amount) : '—'}</p>
+          </div>
+          <p class="mt-3 border-t border-line pt-3 text-[12px] text-muted">Freight is billed/arranged separately and is <strong class="font-medium text-ink">not included</strong> in your order total. Final freight is quoted before shipping.
+          <!-- real build: this distance call runs server-side to protect the mapping API key --></p>
+        </div>
+      </div>
+
+      <!-- fulfillment options -->
+      <fieldset class="mt-6">
+        <legend class="mb-3 text-[15px] font-semibold text-ink">How should we get it to you?</legend>
+        <div class="grid grid-cols-1 gap-2.5">
+          ${opt('delivery','Ship to my address', hasZip ? `Estimated above · ~${ship.miles.toLocaleString()} mi from Leavenworth` : 'Enter a ZIP above for your estimate', ship.amount)}
+          ${opt('pickup','Pick up in Leavenworth','Collect from our Leavenworth, KS facility.',0)}
+          ${opt('self',"I'll arrange my own freight",'We load; you handle transport.',0)}
+        </div>
+      </fieldset>
+
+      <!-- contact & delivery details (merged so ALL shipping collection lives on this one page) -->
+      <fieldset class="mt-6">
+        <legend class="mb-3 text-[15px] font-semibold text-ink">Your details</legend>
+        <div class="space-y-5 rounded-2xl border border-line bg-white p-5">
+          <div>
+            <label for="f-name" class="block text-[13px] font-medium text-ink">Full name</label>
+            <input id="f-name" type="text" autocomplete="name" value="${escAttr(d.name)}" placeholder="Jane Rivera"
+              class="mt-1.5 w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[15px] text-ink focusable" />
+          </div>
+          <div>
+            <label for="f-addr" class="block text-[13px] font-medium text-ink">Delivery address</label>
+            <input id="f-addr" type="text" autocomplete="street-address" value="${escAttr(d.address)}" placeholder="1420 Oak Ridge Rd, Kansas City, MO"
+              class="mt-1.5 w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[15px] text-ink focusable" />
+          </div>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label for="f-phone" class="block text-[13px] font-medium text-ink">Phone</label>
+              <input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" value="${escAttr(d.phone)}" placeholder="(913) 555-0142"
+                class="mt-1.5 w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[15px] tabular-nums text-ink focusable" />
+            </div>
+            <div>
+              <label for="f-email" class="block text-[13px] font-medium text-ink">Email</label>
+              <input id="f-email" type="email" inputmode="email" autocomplete="email" value="${escAttr(d.email)}" placeholder="you@email.com"
+                class="mt-1.5 w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[15px] text-ink focusable" />
+              <p class="mt-1 text-[11px] text-muted">We email your order details and never share your address.</p>
+            </div>
+          </div>
+          <div>
+            <label for="f-notes" class="block text-[13px] font-medium text-ink">Delivery notes / site access <span class="font-normal text-muted">(optional)</span></label>
+            <textarea id="f-notes" rows="3" placeholder="Gate code, crane access, narrow driveway, best drop point…"
+              class="mt-1.5 w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[15px] text-ink focusable">${escapeHtml(d.siteNotes)}</textarea>
+          </div>
+        </div>
+      </fieldset>
+      <p id="step2Msg" role="alert" class="mt-3 hidden text-[13px] text-rose-600"></p>
+      ${continueBar('Continue to review', false)}
+    `;
+
+    // Live-recompute the shipping estimate as the ZIP changes so the estimate box,
+    // fulfillment price, review page, summary rail, and order JSON never disagree
+    // with the entered ZIP. (repaint re-runs renderStep2 -> estimateShipping and
+    // restores focus to the ZIP field.)
+    document.getElementById('zip3').addEventListener('input', e => {
+      const v = e.target.value.replace(/\D/g,'').slice(0,5);
+      const changed = v !== state.delivery.zip;
+      state.delivery.zip = v; e.target.value = v;
+      if (changed) repaint('#zip3');
+    });
+    document.getElementById('recalcBtn').addEventListener('click', () => { repaint('#zip3'); });
+    stepRoot().querySelectorAll('[data-fulfill]').forEach(b => b.addEventListener('click', () => {
+      const id = b.getAttribute('data-fulfill');
+      state.delivery.fulfillment = id;
+      repaint(`[data-fulfill="${id}"]`);
+    }));
+    const bind = (id, key, transform) => document.getElementById(id).addEventListener('input', e => {
+      state.delivery[key] = transform ? transform(e.target.value) : e.target.value;
+    });
+    bind('f-name','name'); bind('f-addr','address'); bind('f-phone','phone'); bind('f-email','email', v=>v.trim()); bind('f-notes','siteNotes');
+  }
+  function validateStep2(){
+    const d = state.delivery; const msg = document.getElementById('step2Msg');
+    let err='';
+    if (!/^\d{5}$/.test(d.zip)) err='Enter a 5-digit destination ZIP.';
+    else if (!d.name.trim()) err='Please enter your full name.';
+    else if (!d.address.trim()) err='Please enter a delivery address.';
+    else if (!/\d/.test(d.phone)) err='Please enter a phone number.';
+    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) err='Please enter a valid email.';
+    if (err){ msg.textContent=err; msg.classList.remove('hidden'); return false; }
+    msg.classList.add('hidden'); return true;
+  }
+
+  /* -------- STEP 3: REVIEW -------- */
+  function renderStep3(){
+    const items = [];
+    items.push([`${currentModel().name} · ${currentModel().dims}`, currentModel().price]);
+    if (state.config.color === 'custom'){
+      if (customColorBillable()) items.push([`Custom color ${state.config.customHex}`, CUSTOM_COLOR_FEE]);
+    } else if (state.config.color){
+      items.push([`Exterior color · ${STD_COLORS.find(c=>c.id===state.config.color)?.name||''}`, STD_COLOR_FEE]);
+    }
+    UPGRADES.forEach(u => { if (state.upgrades[u.id]) items.push([u.name, u.price]); });
+
+    const rows = items.map(([n,p]) => `
+      <div class="flex items-center justify-between py-2 text-[14px]">
+        <span class="text-ink">${n}</span><span class="font-medium tabular-nums text-ink">${fmt(p)}</span>
+      </div>`).join('<div class="border-t border-line"></div>');
+
+    const ship = state.shipping;
+    const colorName = state.config.color==='custom' ? `Custom ${state.config.customHex}` : (STD_COLORS.find(c=>c.id===state.config.color)?.name||'—');
+    const installName = INSTALL_TYPES.find(t=>t.id===state.config.installType)?.name || '—';
+    const fulfillName = {delivery:'Ship to my address', pickup:'Pickup in Leavenworth', self:'Self-arranged freight'}[state.delivery.fulfillment];
+
+    stepRoot().innerHTML = `
+      ${backBtn()}
+      ${stepHeader(3, 'Review your order', 'Everything before you choose how to pay.')}
+
+      <div class="rounded-2xl border border-line bg-white p-5">
+        <p class="text-[13px] font-medium text-muted">Configuration</p>
+        <div class="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5 text-[13px]">
+          <span class="text-muted">Install</span><span class="text-right font-medium text-ink">${installName}</span>
+          <span class="text-muted">Color</span><span class="text-right font-medium text-ink">${colorName}</span>
+          <span class="text-muted">Fulfillment</span><span class="text-right font-medium text-ink">${fulfillName}</span>
+          <span class="text-muted">Ship to</span><span class="text-right font-medium text-ink">${state.delivery.zip||'—'}</span>
+          ${state.noUpgrades ? '<span class="text-muted">Upgrades</span><span class="text-right font-medium text-ink">None selected</span>' : ''}
+        </div>
+
+        <div class="mt-4 border-t border-line pt-2">${rows}</div>
+
+        <!-- subtotal rule -->
+        <div class="mt-1 flex items-center justify-between border-t-2 border-line pt-3 text-[15px]">
+          <span class="font-semibold text-ink">Subtotal</span>
+          <span class="font-semibold tabular-nums text-ink">${fmt(subtotal())}</span>
+        </div>
+
+        <!-- tax -->
+        <div class="mt-2 flex items-center justify-between text-[13px]">
+          <span class="text-muted">Sales tax</span>
+          <span class="font-medium text-muted">Calculated on your final invoice</span>
+        </div>
+        <p class="mt-0.5 text-[11px] text-muted">Applicable sales tax is calculated based on your delivery address and shown on your final invoice.</p>
+
+        <!-- THREE money lines -->
+        <div class="mt-4 rounded-xl border border-brand-sun2/60 bg-[#fff8e6] p-4">
+          <div class="flex items-center justify-between">
+            <span class="text-[14px] font-medium text-ink">Deposit due today</span>
+            <span class="text-2xl font-semibold tabular-nums text-ink"><span class="text-[#a06a00]">${fmt(DEPOSIT)}</span></span>
+          </div>
+          <p class="mt-1 text-[11px] text-muted">Your ${fmt(DEPOSIT)} deposit reserves your build and is applied to your total. See the Terms and Conditions for the deposit and refund policy.</p>
+        </div>
+
+        <div class="mt-3 flex items-center justify-between text-[14px]">
+          <span class="text-muted">Estimated balance before shipping</span>
+          <span class="font-medium tabular-nums text-muted">${fmt(balance())}</span>
+        </div>
+        <p class="mt-0.5 text-[11px] text-muted">(+ tax on final invoice)</p>
+
+        <!-- shipping quarantined -->
+        <div class="mt-4 border-t border-dashed border-line pt-3">
+          <div class="rounded-xl bg-recessed p-3">
+            <div class="flex items-center justify-between text-[13px]">
+              <span class="text-muted">Shipping estimate</span>
+              <span class="tabular-nums text-ink">${state.delivery.fulfillment==='delivery' ? fmt(ship.estimateAmount) : '$0'}</span>
+            </div>
+            <p class="mt-1 text-[11px] text-muted">Non-binding · billed separately · not in total.</p>
+          </div>
+        </div>
+      </div>
+
+      ${continueBar('Continue to payment', false)}
+    `;
+  }
+  // "Seen in real yards" gallery and "Common questions" FAQ removed per client edit #7 (2026-07-16).
+
+  /* -------- STEP 4: PAYMENT & TERMS -------- */
+  function renderStep4(){
+    const cards = PAYMENT_METHODS.map(m => {
+      const on = state.payment.method === m.id;
+      const sunPill = m.recommended ? `<span class="ml-2 rounded-full bg-brand-sun px-2 py-0.5 text-[10px] font-semibold text-ink">Recommended — no card fees</span>` : '';
+      return `
+      <div class="pm-card selcard rounded-xl border border-line bg-white transition" data-open="${on}" data-selected="${on}">
+        <button type="button" data-pm="${m.id}" class="flex w-full items-center gap-3 p-4 text-left focusable" aria-pressed="${on}">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-line text-ink [&>svg]:h-5 [&>svg]:w-5">${m.icon}</span>
+          <span class="min-w-0 flex-1">
+            <span class="flex flex-wrap items-center text-[15px] font-medium text-ink">${m.name}${sunPill}</span>
+            <span class="mt-0.5 block text-[13px] text-muted">${m.sub}</span>
+          </span>
+          <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${on?'border-brand-blue':'border-line'}"><span class="h-2.5 w-2.5 rounded-full ${on?'bg-brand-blue':'bg-transparent'}"></span></span>
+        </button>
+        <div class="pm-panel"><div><div class="px-4 pb-4">${paymentPanel(m.id)}</div></div></div>
+      </div>`;
+    }).join('');
+
+    const chosen = PAYMENT_METHODS.find(x=>x.id===state.payment.method);
+    const isInstant = chosen && !chosen.manual;
+    const submitVerb = state.payment.method
+      ? (isInstant ? `Place order & pay ${fmt(DEPOSIT)} deposit` : 'Reserve my build')
+      : 'Choose a payment method above';
+
+    stepRoot().innerHTML = `
+      ${backBtn()}
+      ${stepHeader(4, 'How would you like to pay?', '')}
+      <div class="-mt-3 mb-4 rounded-xl bg-recessed p-4 text-[15px] text-ink">
+        <strong class="font-semibold">$5,000 today.</strong> The balance is due before we ship.
+      </div>
+
+      <!-- Persistent trust strip — shows for EVERY method (not gated on card selection). -->
+      <div class="mb-5 rounded-xl border border-line bg-white p-4">
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[12px] font-medium text-ink">
+          <span class="inline-flex items-center gap-1.5"><svg class="h-4 w-4 text-brand-cyanDark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>256-bit SSL · bank-grade encryption</span>
+          <span class="inline-flex items-center gap-1.5"><svg class="h-4 w-4 text-brand-cyanDark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5l-8-3z"/></svg>Secure, encrypted checkout</span>
+        </div>
+        <p class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-muted">
+          <span>5-year structural · 3-year equipment warranty</span>
+          <span class="text-line">·</span>
+          <span>$5,000 deposit is refundable per terms</span>
+        </p>
+        <p class="mt-1.5 text-[12px] text-muted">Prefer a human? Call <a href="tel:+19137050591" class="font-medium text-brand-blue hover:text-brand-blueDark">(913) 705-0591</a>.</p>
+      </div>
+      <div class="space-y-2.5" role="group" aria-label="Choose a payment method">${cards}</div>
+
+      <!-- Terms & Conditions: external link + required checkbox, like any online checkout. -->
+      <div class="mt-6 rounded-2xl border border-line bg-white p-4">
+        <label class="flex cursor-pointer items-start gap-3">
+          <input id="termsChk" type="checkbox" aria-required="true" ${state.consent.termsAccepted?'checked':''}
+            class="mt-0.5 h-5 w-5 shrink-0 rounded border-line text-brand-blue focusable" />
+          <span class="text-[14px] text-ink">I have read and agree to the Midwest Container Pools
+            <a href="${TERMS_URL}" target="_blank" rel="noopener noreferrer" class="font-medium text-brand-blue underline underline-offset-2 hover:text-brand-blueDark">Terms and Conditions</a>.
+            <span class="font-medium text-rose-600">(required)</span></span>
+        </label>
+        <p class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 pl-8 text-[12px] text-muted">
+          <a href="${TERMS_URL}" download class="inline-flex items-center gap-1 font-medium text-brand-blue hover:text-brand-blueDark">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>
+            Download the Terms (PDF)
+          </a>
+        </p>
+      </div>
+
+      <p id="payMsg" role="alert" class="mt-4 hidden text-[13px] text-rose-600"></p>
+      <div class="mt-3">
+        <button id="submitBtn"
+          class="w-full inline-flex h-[52px] items-center justify-center gap-2 rounded-xl bg-brand-blue px-6 text-base font-semibold text-white shadow-sm transition hover:bg-brand-blueDark active:scale-[.99] disabled:opacity-40 disabled:cursor-not-allowed">
+          <span id="submitLabel">${submitVerb}</span>
+        </button>
+        <p class="mt-3 flex items-center justify-center gap-2 text-[12px] text-muted">${sunPip}<span>Your ${fmt(DEPOSIT)} deposit is applied to your total. Balance due before we ship.</span></p>
+      </div>
+    `;
+
+    stepRoot().querySelectorAll('[data-pm]').forEach(b => b.addEventListener('click', () => {
+      const id = b.getAttribute('data-pm');
+      state.payment.method = id;
+      repaint(`[data-pm="${id}"]`);
+    }));
+    wirePaymentPanel();
+
+    // Standard-checkout pattern: the submit button stays enabled and validation runs
+    // on click, so keyboard/screen-reader users get a real, announced error (role=alert
+    // on #payMsg) instead of a silently-disabled button with no reachable message.
+    const chk = document.getElementById('termsChk');
+    const btn = document.getElementById('submitBtn');
+    const msg = document.getElementById('payMsg');
+    const relabel = () => {
+      document.getElementById('submitLabel').textContent = state.payment.method
+        ? ((PAYMENT_METHODS.find(x=>x.id===state.payment.method)||{}).manual ? 'Reserve my build' : `Place order & pay ${fmt(DEPOSIT)} deposit`)
+        : 'Choose a payment method above';
+    };
+    chk.addEventListener('change', () => {
+      state.consent.termsAccepted = chk.checked;
+      if (chk.checked) msg.classList.add('hidden');
+      relabel();
+    });
+    btn.addEventListener('click', () => {
+      if (!state.payment.method){ msg.textContent='Please choose a payment method above.'; msg.classList.remove('hidden'); return; }
+      if (!state.consent.termsAccepted){
+        msg.textContent='Please check the box to agree to the Terms and Conditions before you continue.';
+        msg.classList.remove('hidden');
+        chk.focus();
+        return;
+      }
+      msg.classList.add('hidden');
+      submitOrder();
+    });
+  }
+
+  function paymentPanel(id){
+    const ref = orderRef();
+    switch(id){
+      case 'ach': return `
+        <div class="rounded-xl border border-line bg-recessed p-4">
+          <p class="text-[13px] text-ink">Pay directly from your bank account — no card fees. When you place your order, you'll securely connect your bank to authorize your ${fmt(DEPOSIT)} deposit.</p>
+          <p class="mt-3 flex items-center gap-2 text-[12px] text-muted">
+            <svg class="h-4 w-4 shrink-0 text-brand-cyanDark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            Bank connection is encrypted and read-only. We never see or store your login.
+          </p>
+        </div>`;
+      case 'card': return `
+        <div class="rounded-xl border border-line bg-recessed p-4">
+          <p class="text-[13px] text-ink">Pay by credit or debit card. When you place your order, you'll complete payment on our secure, encrypted payment page.</p>
+          <div class="mt-3 flex items-center gap-2">
+            <span class="rounded-md border border-line bg-white px-2 py-1 text-[11px] font-semibold text-ink">VISA</span>
+            <span class="rounded-md border border-line bg-white px-2 py-1 text-[11px] font-semibold text-ink">Mastercard</span>
+            <span class="rounded-md border border-line bg-white px-2 py-1 text-[11px] font-semibold text-ink">AMEX</span>
+            <span class="rounded-md border border-line bg-white px-2 py-1 text-[11px] font-semibold text-ink">Discover</span>
+          </div>
+          <p class="mt-3 flex items-center gap-2 text-[12px] text-muted">
+            <svg class="h-4 w-4 shrink-0 text-brand-cyanDark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            256-bit SSL · your card details are encrypted and never stored on this site.
+          </p>
+        </div>`;
+      case 'zelle': return `
+        <div class="rounded-xl border border-line bg-recessed p-4">
+          <div class="grid grid-cols-2 gap-y-2 text-[13px]">
+            <span class="text-muted">Zelle handle</span><span class="text-right font-medium text-ink">Sheldon@midwestcontainerpools.com</span>
+            <span class="text-muted">Reference</span><span class="text-right font-mono text-ink">${ref}</span>
+          </div>
+          <div class="mt-3 rounded-lg border border-amber-300 bg-amber-50 p-3">
+            <p class="text-[12px] text-amber-800"><strong>Heads up:</strong> consumer Zelle limits are typically $1,000–$3,500/day, which will likely block a single $5,000 send. Split it across days, or use ACH/wire to send the full deposit at once.</p>
+          </div>
+          <p class="mt-2 text-[11px] text-muted">Your build slot reserves now; your deposit confirms when your Zelle transfer arrives.</p>
+        </div>`;
+      case 'wire': return `
+        <div class="rounded-xl border border-line bg-recessed p-4">
+          <div class="grid grid-cols-2 gap-y-2 text-[13px]">
+            <span class="text-muted">Bank</span><span class="text-right font-medium text-ink">Midwest Bank</span>
+            <span class="text-muted">Routing</span><span class="text-right font-mono text-ink">063•••••21</span>
+            <span class="text-muted">Account</span><span class="text-right font-mono text-ink">••••••8847</span>
+            <span class="text-muted">Reference</span><span class="text-right font-mono text-ink">${ref}</span>
+          </div>
+          <p class="mt-2 text-[11px] text-muted">Include the reference so we can match your deposit. Your build slot reserves now.</p>
+        </div>`;
+      case 'check': return `
+        <div class="rounded-xl border border-line bg-recessed p-4">
+          <p class="text-[13px] text-ink">Make payable to <strong>Midwest Container Pools LLC</strong> and mail to:</p>
+          <p class="mt-2 text-[13px] text-ink">Midwest Container Pools LLC<br/>22143 219th Street<br/>Leavenworth, KS 66048</p>
+          <p class="mt-3 text-[13px]"><span class="text-muted">Memo:</span> <span class="font-mono text-ink">${ref}</span></p>
+          <p class="mt-2 text-[11px] text-muted">Your build slot reserves now; your deposit confirms when your check clears.</p>
+        </div>`;
+      case 'financing': return `
+        <div class="rounded-xl border border-line bg-recessed p-4">
+          <p class="text-[13px] text-ink">Apply with HFS Financial, our financing partner. Checking your rate is a soft credit check and will not affect your score. Your build slot reserves now and confirms once financing funds your payment.</p>
+          <a href="https://www.hfsfinancial.net/promo/65cfafcd8f9d691395b70e36" target="_blank" rel="noopener noreferrer"
+            class="mt-3 inline-flex items-center gap-2 rounded-xl bg-brand-blue px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-blueDark focusable">
+            Apply with HFS Financial
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg>
+          </a>
+          <p class="mt-2 text-[11px] text-muted">Opens HFS Financial in a new tab. Checking your rate will not affect your credit score.</p>
+        </div>`;
+      default: return '';
+    }
+  }
+  // Card and ACH are completed on the processor's secure hosted page at order
+  // placement, so no card/bank fields are captured on this site. Nothing to wire here.
+  function wirePaymentPanel(){}
+  // ONE order-level reference is intentionally shared across every manual method
+  // (Zelle / Wire / Check). It is a single deposit, so the same reference must
+  // appear wherever the buyer pays — the Step 4 payment panel and the thank-you screen.
+  function orderRef(){
+    if (!state._ref) state._ref = 'RP-' + Math.random().toString(36).slice(2,7).toUpperCase() + '-' + Date.now().toString().slice(-4);
+    return state._ref;
+  }
+
+  // The old standalone "Review draft terms" step (step 7 of 7) was removed per
+  // client edit #8: terms are now an external linked document with a required
+  // checkbox on the payment step, like a standard online checkout.
+
+  /* -------- SUBMIT -> ORDER RECORD -------- */
+  function submitOrder(){
+    const m = PAYMENT_METHODS.find(x=>x.id===state.payment.method);
+    const instant = m && !m.manual;
+    const status = instant ? 'deposit_paid' : 'pending_payment';
+    const now = new Date();
+
+    const order = {
+      orderId: 'RP-' + now.getFullYear() + '-' + Math.random().toString(36).slice(2,8).toUpperCase(),
+      createdAt: now.toISOString(),
+      status,
+      customer: { name: state.delivery.name, email: state.delivery.email, phone: state.delivery.phone },
+      delivery: { address: state.delivery.address, zip: state.delivery.zip, installType: state.config.installType, siteNotes: state.delivery.siteNotes },
+      config: {
+        baseModel: state.config.baseModel,
+        color: state.config.color === 'custom' ? state.config.customHex : state.config.color,
+        upgrades: UPGRADES.filter(u=>state.upgrades[u.id]).map(u=>({id:u.id,name:u.name,price:u.price})),
+        upgradesDeclined: state.noUpgrades,
+      },
+      pricing: { subtotal: subtotal(), colorFee: colorFee(), depositAmount: DEPOSIT, balanceAmount: balance() },
+      shipping: { estimateAmount: state.delivery.fulfillment==='delivery'?state.shipping.estimateAmount:0, distanceMiles: state.shipping.distanceMiles, fulfillment: state.delivery.fulfillment },
+      payment: { method: state.payment.method, depositCaptured: instant, processorRef: instant ? ('pay_'+Math.random().toString(36).slice(2,12)) : orderRef() },
+      consent: { termsAccepted: true, timestamp: now.toISOString() },
+    };
+    state.order = order;
+    renderThankYou(order);
+  }
+
+  /* -------- THANK YOU (status-aware) -------- */
+  function renderThankYou(order){
+    document.getElementById('mobileBar').classList.add('hidden');
+    const paid = order.status === 'deposit_paid';
+    const m = PAYMENT_METHODS.find(x=>x.id===order.payment.method);
+
+    const manualInstr = !paid ? `
+      <div class="mt-6 rounded-2xl border border-line bg-white p-5 text-left">
+        <p class="text-[14px] font-semibold text-ink">Finish your deposit (${m.name})</p>
+        <div class="mt-3">${paymentPanel(order.payment.method)}</div>
+      </div>` : '';
+
+    const emailPreview = paid ? `
+      <div class="mt-6 overflow-hidden rounded-2xl border border-line bg-white text-left">
+        <div class="border-b border-line bg-recessed px-5 py-3 text-[12px] text-muted">
+          <span class="font-medium text-ink">Midwest Container Pools</span> &lt;Sheldon@midwestcontainerpools.com&gt; → ${escapeHtml(order.customer.email||'you@email.com')}
+          <div class="mt-0.5 font-medium text-ink">Your order is placed — deposit being processed 🎉</div>
+        </div>
+        <div class="p-5 text-[13px] text-ink">
+          <p>Hi ${escapeHtml(order.customer.name||'there')},</p>
+          <p class="mt-2">Thank you for your order. Your <strong>${fmt(DEPOSIT)}</strong> deposit for <strong>${currentModel().name}</strong> is being processed and your build slot is reserved (order <span class="font-mono">${order.orderId}</span>).</p>
+          <p class="mt-2 text-muted">Next: we'll confirm your build and ship window and coordinate offload. Estimated balance before shipping: <span class="tabular-nums">${fmt(order.pricing.balanceAmount)}</span> (+ tax on final invoice).</p>
+        </div>
+      </div>` : '';
+
+    document.getElementById('app').innerHTML = `
+      <section class="water-grad">
+        <div class="mx-auto max-w-2xl px-5 py-14 text-center sm:py-20">
+          <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/95 shadow-md">
+            <svg class="h-7 w-7 text-brand-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true" focusable="false"><path d="m5 12 5 5 9-9"/></svg>
+          </span>
+          <h1 id="thankYouHeading" tabindex="-1" class="mt-5 text-3xl font-semibold tracking-tight2 text-white outline-none sm:text-4xl">
+            ${paid ? "Your build is scheduled." : "Your slot is reserved."}
+          </h1>
+          <p class="mx-auto mt-3 max-w-md text-[15px] text-white/85">
+            ${paid
+              ? `Your ${fmt(DEPOSIT)} deposit is being processed. Watch your inbox — your order confirmation is on its way.`
+              : `Your build slot is held. It's confirmed the moment your ${fmt(DEPOSIT)} deposit is received — here's how to finish.`}
+          </p>
+          <div class="mx-auto mt-5 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-[13px] text-white backdrop-blur">
+            <span class="opacity-80">Order</span><span class="font-mono">${order.orderId}</span>
+            <span class="opacity-50">·</span>
+            <span class="rounded-full ${paid?'bg-emerald-400/90 text-emerald-950':'bg-brand-sun text-ink'} px-2 py-0.5 text-[11px] font-semibold">${paid?'Order placed':'Awaiting deposit'}</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="mx-auto max-w-2xl px-5 pb-24 -mt-8">
+        <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-md">
+          <img src="./assets/img/pool-hero.jpg" alt="A Midwest Container Pool" loading="lazy" class="h-44 w-full object-cover sm:h-56" />
+          <div class="p-5">
+            <div class="flex items-center justify-between text-[14px]">
+              <span class="text-muted">Subtotal</span><span class="font-medium tabular-nums text-ink">${fmt(order.pricing.subtotal)}</span>
+            </div>
+            <div class="mt-1 flex items-center justify-between text-[14px]">
+              <span class="text-muted">Deposit ${paid?'paid':'due'}</span><span class="font-semibold tabular-nums text-ink">${fmt(DEPOSIT)}</span>
+            </div>
+            <div class="mt-1 flex items-center justify-between text-[14px]">
+              <span class="text-muted">Estimated balance before shipping</span><span class="tabular-nums text-muted">${fmt(order.pricing.balanceAmount)}</span>
+            </div>
+            <p class="mt-1 text-[11px] text-muted">(+ tax on final invoice · shipping quoted separately, not in total)</p>
+          </div>
+        </div>
+
+        ${emailPreview}
+        ${manualInstr}
+
+        <p class="mt-6 text-center text-[13px] text-muted">A confirmation email is on its way${order.customer.email?` to <span class="text-ink">${escapeHtml(order.customer.email)}</span>`:''}. Questions? Call <a href="tel:+19137050591" class="font-medium text-brand-blue">(913) 705-0591</a>.</p>
+
+        <div class="mt-8 text-center">
+          <button id="restartBtn" class="text-[13px] font-medium text-brand-blue hover:text-brand-blueDark">Start a new order</button>
+        </div>
+      </div>
+    `;
+    window.scrollTo({top:0,behavior:'smooth'});
+    // Move focus to the confirmation heading so screen readers announce the
+    // order result (this view is rendered outside goTo(), which normally handles focus).
+    const tyHeading = document.getElementById('thankYouHeading');
+    if (tyHeading) tyHeading.focus({ preventScroll:true });
+    bindAccordions(document.getElementById('app'));
+    document.getElementById('restartBtn').addEventListener('click', () => location.reload());
+  }
+  // escapeHtml/escAttr are defined once near the money helpers (top of this script).
+
+  /* ============================================================
+     LIVE SUMMARY (rail + drawer mirror)
+     ============================================================ */
+  function summaryHTML(){
+    const lines = [];
+    lines.push([`${currentModel().name}`, fmt(currentModel().price), false]);
+    const installLineName = INSTALL_TYPES.find(t=>t.id===state.config.installType)?.name;
+    lines.push([`Install · ${installLineName||'—'}`, installLineName?'No charge':'—', false]);
+    const customBillable = customColorBillable();
+    const colorName = state.config.color==='custom'
+      ? (customBillable ? `Color · Custom ${state.config.customHex}` : `Color · Custom (enter hex)`)
+      : `Color · ${STD_COLORS.find(c=>c.id===state.config.color)?.name||'choose below'}`;
+    const cFee = colorFee();
+    lines.push([colorName, cFee ? `+${fmt(cFee)}` : '—', cFee > 0]);
+    UPGRADES.forEach(u => { if (state.upgrades[u.id]) lines.push([u.name, `+${fmt(u.price)}`, true]); });
+    if (state.noUpgrades) lines.push(['Upgrades · none', '$0', false]);
+
+    const installName = INSTALL_TYPES.find(t=>t.id===state.config.installType)?.name;
+    const payName = PAYMENT_METHODS.find(p=>p.id===state.payment.method)?.name;
+    const showShip = state.delivery.fulfillment==='delivery' && state.shipping.estimateAmount>0;
+
+    const rows = lines.map(([n,p,hl]) => `
+      <div class="lineitem-in flex items-start justify-between gap-3 py-2 text-[13px]">
+        <span class="text-muted">${n}</span>
+        <span class="shrink-0 font-medium tabular-nums ${hl?'text-ink':'text-muted'}">${p}</span>
+      </div>`).join('<div class="border-t border-line/70"></div>');
+
+    return `
+      <div class="flex items-center gap-3 pb-4">
+        <img src="./assets/img/pool-above-deck.jpg" alt="" loading="lazy" class="h-12 w-16 rounded-lg object-cover" onerror="this.style.display='none'" />
+        <div class="leading-tight">
+          <p class="text-[13px] font-semibold text-ink">${currentModel().name}</p>
+          <p class="text-[12px] text-muted">20×8×4 ${installName?'· '+installName:''}</p>
+        </div>
+      </div>
+
+      <div class="border-t border-line pt-1">${rows}</div>
+
+      <div class="mt-1 flex items-center justify-between border-t-2 border-line pt-3 text-[14px]">
+        <span class="font-semibold text-ink">Subtotal</span>
+        <span class="font-semibold tabular-nums text-ink" data-anim="subtotal">${fmt(subtotal())}</span>
+      </div>
+
+      <!-- hero money line -->
+      <div class="mt-3 rounded-xl border-t border-brand-sun2 bg-[#fff8e6] p-3">
+        <div class="flex items-center justify-between">
+          <span class="text-[13px] font-medium text-ink">Deposit today</span>
+          <span class="text-xl font-semibold tabular-nums"><span class="text-[#a06a00]">${fmt(DEPOSIT)}</span></span>
+        </div>
+      </div>
+
+      <div class="mt-3 flex items-center justify-between text-[13px]">
+        <span class="text-muted">Estimated balance<br/><span class="text-[11px]">(+ tax on final invoice)</span></span>
+        <span class="tabular-nums text-muted" data-anim="balance">${fmt(balance())}</span>
+      </div>
+
+      ${payName ? `
+      <div class="mt-3 flex items-center justify-between rounded-lg bg-recessed px-3 py-2 text-[12px]">
+        <span class="text-muted">Paying by</span>
+        <span class="font-medium text-ink">${payName}</span>
+      </div>` : ''}
+
+      <!-- shipping quarantined -->
+      <div class="mt-3 border-t border-dashed border-line pt-3">
+        <div class="rounded-lg bg-recessed p-3">
+          <div class="flex items-center justify-between text-[12px]">
+            <span class="text-muted">Shipping estimate</span>
+            <span class="tabular-nums text-ink">${showShip?fmt(state.shipping.estimateAmount):'—'}</span>
+          </div>
+          <p class="mt-1 text-[10px] leading-snug text-muted">Non-binding · billed separately · not in total.</p>
+        </div>
+      </div>
+
+      <p class="mt-3 flex items-center gap-2 border-t border-line pt-3 text-[11px] text-muted">${sunPip}<span>Secure checkout — you won't be charged until you place your order.</span></p>
+    `;
+  }
+
+  let lastSub = subtotal(), lastBal = balance();
+  function renderSummary(){
+    const html = summaryHTML();
+    const rail = document.getElementById('railBody');
+    const drawer = document.getElementById('drawerBody');
+    if (rail) rail.innerHTML = html;
+    if (drawer) drawer.innerHTML = html;
+    // Live mobile-bar order figure — the deposit stays $5,000 but the order value
+    // changes as upgrades/custom color toggle, so the always-visible bar must update.
+    const ns = subtotal(), nb = balance();
+    const mobileSub = document.getElementById('mobileBarSubtotal');
+    if (mobileSub) mobileSub.textContent = fmt(ns);
+    // tick animation on change
+    if (ns!==lastSub || nb!==lastBal){
+      document.querySelectorAll('[data-anim]').forEach(el=>{ el.classList.add('price-tick'); setTimeout(()=>el.classList.remove('price-tick'),200); });
+      lastSub=ns; lastBal=nb;
+    }
+  }
+
+  /* ============================================================
+     NAV / WIRING
+     ============================================================ */
+  const RENDERERS = { 1:renderStep1, 2:renderStep2, 3:renderStep3, 4:renderStep4 };
+
+  function goTo(step, dir){
+    state.dir = dir || 'fwd';
+    state.step = step;
+    setProgress();
+    RENDERERS[step]();
+    const root = stepRoot();
+    root.classList.remove('step-enter','step-enter-back');
+    void root.offsetWidth;
+    root.classList.add(state.dir==='fwd'?'step-enter':'step-enter-back');
+    bindStep();
+    renderSummary();
+    window.scrollTo({top:0,behavior:'smooth'});
+    // Move focus to the new step heading so screen readers announce the step
+    // title on each transition (the heading text includes "Step n of 4").
+    const heading = document.getElementById('stepHeading');
+    if (heading) heading.focus({ preventScroll:true });
+  }
+
+  // Re-render the current step in place (after an in-step change) WITHOUT the
+  // slide animation, and re-bind its Continue/Back/accordion handlers. Every
+  // renderStepN() rebuilds the DOM, so handlers must be re-attached each time.
+  // Because the activated control is destroyed and recreated, keyboard focus
+  // would otherwise reset to <body>. Pass a CSS selector for the logically
+  // equivalent control so focus is restored to it after the rebuild — without
+  // this the wizard is unusable for keyboard / screen-reader users.
+  function repaint(focusSelector){
+    RENDERERS[state.step]();
+    bindStep();
+    renderSummary();
+    if (focusSelector){
+      const el = stepRoot().querySelector(focusSelector);
+      if (el) el.focus();
+    }
+  }
+
+  // Bind the per-render handlers (Continue, Back, accordions) for the current step.
+  function bindStep(){
+    bindAccordions(stepRoot());
+    bindContinueBack();
+  }
+
+  function validateCurrent(){
+    if (state.step===1) return validateStep1();
+    if (state.step===2) return validateStep2();
+    return true;
+  }
+
+  function bindContinueBack(){
+    const cont = stepRoot().querySelector('[data-continue]');
+    if (cont) cont.addEventListener('click', () => {
+      if (!validateCurrent()) return;
+      if (state.step < state.maxStep) goTo(state.step+1,'fwd');
+    });
+    const back = stepRoot().querySelector('[data-back]');
+    if (back) back.addEventListener('click', () => { if (state.step>1) goTo(state.step-1,'back'); });
+  }
+
+  function bindAccordions(scope){
+    scope.querySelectorAll('[data-acc]').forEach(btn => {
+      if (btn._bound) return; btn._bound=true;
+      btn.addEventListener('click', () => {
+        const acc = btn.closest('.acc');
+        acc.setAttribute('data-open', acc.getAttribute('data-open')==='true' ? 'false' : 'true');
+      });
+    });
+  }
+
+  /* ---- hero -> wizard ---- */
+  document.getElementById('openWizardBtn').addEventListener('click', () => {
+    const hero = document.getElementById('hero');
+    hero.classList.add('fade-out');
+    setTimeout(() => {
+      hero.style.display='none';
+      const app = document.getElementById('app');
+      app.classList.remove('hidden');
+      app.classList.add('fade-rise');
+      goTo(1,'fwd');
+    }, 320);
+  });
+
+  /* ---- mobile drawer (modal: focus moves in, Tab is trapped, focus returns) ---- */
+  let drawerPrevFocus = null;
+  function drawerFocusables(){
+    return Array.from(document.getElementById('mobileDrawer')
+      .querySelectorAll('a[href], button:not([disabled]), input, textarea, [tabindex]:not([tabindex="-1"])'))
+      .filter(el => el.offsetParent !== null);
+  }
+  function trapDrawerTab(e){
+    if (e.key !== 'Tab') return;
+    const f = drawerFocusables();
+    if (!f.length) return;
+    const first = f[0], last = f[f.length-1];
+    if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  }
+  function openDrawer(){
+    drawerPrevFocus = document.activeElement;
+    document.getElementById('drawerScrim').classList.remove('hidden');
+    const drawer = document.getElementById('mobileDrawer');
+    requestAnimationFrame(()=>{ drawer.classList.add('open'); });
+    document.body.classList.add('drawer-open');
+    // make the background truthfully inert for aria-modal
+    const app = document.getElementById('app');
+    if (app) app.setAttribute('aria-hidden','true');
+    document.getElementById('closeDrawerBtn').focus();
+    drawer.addEventListener('keydown', trapDrawerTab);
+  }
+  function closeDrawer(){
+    const drawer = document.getElementById('mobileDrawer');
+    // Guard: only act when the drawer is actually open, so a global Escape press
+    // (e.g. dismissing an autofill dropdown mid-form) never steals focus to
+    // the View-order button on narrow viewports.
+    if (!drawer.classList.contains('open')) return;
+    drawer.classList.remove('open');
+    document.getElementById('drawerScrim').classList.add('hidden');
+    document.body.classList.remove('drawer-open');
+    drawer.removeEventListener('keydown', trapDrawerTab);
+    const app = document.getElementById('app');
+    if (app) app.removeAttribute('aria-hidden');
+    // return focus to the trigger
+    const trigger = drawerPrevFocus || document.getElementById('viewOrderBtn');
+    if (trigger && typeof trigger.focus === 'function') trigger.focus();
+    drawerPrevFocus = null;
+  }
+  document.getElementById('viewOrderBtn').addEventListener('click', openDrawer);
+  document.getElementById('closeDrawerBtn').addEventListener('click', closeDrawer);
+  document.getElementById('drawerScrim').addEventListener('click', closeDrawer);
+
+  /* ---- chat ---- */
+  document.querySelectorAll('.chatBtn').forEach(b => b.addEventListener('click', () => {
+    document.getElementById('chatPop').classList.toggle('hidden');
+  }));
+
+  /* keyboard: Esc closes drawer/chat */
+  document.addEventListener('keydown', e => {
+    if (e.key==='Escape'){ closeDrawer(); document.getElementById('chatPop').classList.add('hidden'); }
+  });
+
+  // initial summary (in case wizard opened via deep state)
+  renderSummary();
+  </script>
+</body>
+</html>
