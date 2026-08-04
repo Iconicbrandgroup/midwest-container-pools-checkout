@@ -18,7 +18,9 @@ from reportlab.lib.units import inch
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
 
 OUT = Path(__file__).with_name("Midwest-Container-Pools-Terms-and-Conditions.pdf")
-VERSION = "1.0"
+# Bump on every content change and keep TERMS_VERSION in index.html in step:
+# the order record stores which version the buyer accepted.
+VERSION = "1.1"
 EFFECTIVE = "August 4, 2026"
 
 CYAN, INK, MUTED = HexColor("#0891b2"), HexColor("#0c1a27"), HexColor("#6b7280")
@@ -62,8 +64,9 @@ SECTIONS = [
      "The 20ft container pool is priced at $46,440 and the 40ft container pool with tanning ledge at $68,790. "
      "Exterior color and finish selection is included in the base price. Optional equipment is priced as shown at "
      "checkout: Cold Weather Electric Heat Pump $4,656; Propane or Natural Gas Heater $3,154; Salt Water "
-     "Chlorination System $1,977. A deposit is collected at checkout to reserve your build slot, with the "
-     "remaining balance due before delivery, as stated on your order confirmation."),
+     "Chlorination System $1,977. A deposit reserves your build slot and is applied to your order total; "
+     "Midwest Container Pools arranges collection of that deposit with you after your order is placed, and the "
+     "remaining balance is due before delivery, as stated on your order confirmation."),
     ("4. Deposit, Balance and Cancellation",
      "Your deposit reserves a build slot and is applied to your order total. The refund window, any deduction for "
      "costs already incurred, and the cancellation procedure are set out in the order confirmation Midwest "

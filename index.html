@@ -5,16 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Midwest Container Pools — Order Now</title>
   <meta name="description" content="Order a Midwest Container Pool — the USA's first insulated container pool, built in Leavenworth, KS and delivered nationwide." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Cpath d='M12 38c8-7 16 7 24 0s12-4 16 0' fill='none' stroke='%23ffd349' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M14 27h36' stroke='white' stroke-width='7' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='6' fill='%230c1a27'/%3E%3Crect x='10' y='16' width='44' height='32' rx='3' fill='none' stroke='%230891b2' stroke-width='4'/%3E%3Cpath d='M19 16v32M27 16v32M37 16v32M45 16v32' stroke='%230891b2' stroke-width='2.5' opacity='.55'/%3E%3Cpath d='M10 38c7-5 12 5 19 0s12-5 19 0' fill='none' stroke='%23fcbb00' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
 
   <!-- ============================================================
-       Midwest Container Pools "Order Now" — self-service checkout
-       Single self-contained file. Tailwind + Inter, vanilla JS state machine.
-       Look/feel: "Still Water, Sunlit Deposit".
-       NOTE FOR ENGINEERING: the payment step hands off to the processor at
-       launch (Stripe/ACH). Card fields are front-end only; wire a PCI-compliant
-       processor (Stripe Elements/Checkout) and order persistence before taking
-       live customer payments.
+       Midwest Container Pools — Order Now
+       Single self-contained page: Tailwind, self-hosted Inter + Playfair
+       Display, and a vanilla-JS state machine. No build step, no CDN fonts.
        ============================================================ -->
 
   <!-- Inter -->
@@ -342,7 +338,7 @@
     html, body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
     /* MCP display face — used for step titles and money figures */
     .font-display { font-family: 'Playfair Display', Georgia, serif; letter-spacing: -0.01em; }
-    /* squared, industrial button treatment (vs Ready Pool's pill) */
+    /* squared, industrial button treatment */
     .btn-mcp {
       border-radius: 0.375rem;
       text-transform: uppercase;
@@ -371,13 +367,13 @@
     .tracking-tight2 { letter-spacing: -0.02em; }
 
     /* Water gradient — bookends only (hero + thank-you) */
-    .water-grad {
+    .deck-wash {
       background-color: #0c1a27;
       background-image:
         repeating-linear-gradient(90deg, rgba(255,255,255,.045) 0 2px, transparent 2px 22px),
         linear-gradient(180deg, #0c1a27 0%, #12293c 100%);
     }
-    .rail-hairline { background-color: #0891b2; }
+    .rail-rule { background-color: #0891b2; }
 
     /* Step transitions: forward slides in from right */
     .step-enter { animation: stepIn .28s cubic-bezier(.22,.61,.36,1) both; }
@@ -392,13 +388,13 @@
     @keyframes fadeOut { to { opacity:0; transform: translateY(-12px); } }
 
     /* Summary line items slide+fade in */
-    .lineitem-in { animation: lineIn .18s ease both; }
+    .row-enter { animation: lineIn .18s ease both; }
     @keyframes lineIn { from { opacity:0; transform: translateY(-4px);} to {opacity:1; transform:none;} }
 
     /* Payment accordion */
     .pm-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .25s ease, opacity .25s ease; opacity:0; }
     .pm-panel > div { overflow: hidden; }
-    .pm-card[data-open="true"] .pm-panel { grid-template-rows: 1fr; opacity:1; }
+    .paytile[data-open="true"] .pm-panel { grid-template-rows: 1fr; opacity:1; }
 
     /* generic accordion (terms / faq) */
     .acc-panel { display:grid; grid-template-rows:0fr; transition: grid-template-rows .25s ease; }
@@ -421,9 +417,9 @@
       outline: 2px solid #0891b2; outline-offset: 2px; border-radius: 0.5rem;
     }
     /* radio/checkbox card selected */
-    .selcard[data-selected="true"] {
+    .optcard[data-selected="true"] {
       border-color: #0891b2;
-      box-shadow: 0 0 0 1px #0891b2, 0 0 0 4px rgba(37,99,235,0.12);
+      box-shadow: 0 0 0 1px #0891b2, 0 0 0 4px rgba(8,145,178,0.12);
       background: #eaf6fa;
     }
     .swatch[data-selected="true"] { box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #fcbb00; }
@@ -443,7 +439,7 @@
 <body class="min-h-screen antialiased">
 
   <!-- ============================================================ HERO ============================================================ -->
-  <section id="hero" class="relative min-h-[100svh] water-grad overflow-hidden">
+  <section id="hero" class="relative min-h-[100svh] deck-wash overflow-hidden">
     <!-- white scrim left->transparent so headline stays AA-legible -->
     <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-brand-blueDeep/45 via-brand-blue/10 to-transparent"></div>
 
@@ -507,7 +503,8 @@
         <img src="./assets/img/mcp-logo.png" alt="Midwest Container Pools" class="h-7 w-auto sm:h-8" />
         <div class="flex items-center gap-4">
           <span id="stepLabel" class="text-xs font-medium text-muted tabular-nums">Step 1 of 4</span>
-          <a href="tel:+19137050591" class="inline-flex items-center gap-1.5 text-xs font-medium text-brand-blue hover:text-brand-blueDark sm:text-sm">
+          <a href="tel:+19137050591" aria-label="Call Midwest Container Pools at (913) 705-0591"
+            class="-mx-2 inline-flex items-center gap-1.5 px-2 py-2.5 text-xs font-medium text-brand-blue hover:text-brand-blueDark sm:text-sm">
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             <span class="hidden sm:inline">(913) 705-0591</span>
           </a>
@@ -522,7 +519,7 @@
 
     <div class="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 pb-40 pt-6 sm:px-6 md:grid-cols-[320px_1fr] md:pb-16 md:pt-8">
       <!-- ============ DECISION COLUMN ============ -->
-      <div class="order-2 mx-auto w-full max-w-decision md:mx-0">
+      <div class="order-2 mx-auto w-full max-w-order md:mx-0">
         <div id="stepRoot"><!-- steps injected --></div>
       </div>
 
@@ -530,7 +527,7 @@
       <aside class="order-1 hidden md:block">
         <div class="sticky top-28">
           <div id="railCard" class="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
-            <div class="rail-hairline h-1 w-full"></div>
+            <div class="rail-rule h-1 w-full"></div>
             <div class="p-5" id="railBody"><!-- summary injected --></div>
           </div>
           <!-- footer safety net -->
@@ -543,6 +540,9 @@
     </div>
 
     <!-- ============ MOBILE BOTTOM BAR ============ -->
+    <!-- Announces the running total; lives outside #stepRoot so repaints don't destroy it. -->
+    <p id="liveTotal" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+
     <div id="mobileBar" class="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 px-4 py-3 shadow-md backdrop-blur md:hidden">
       <div class="mx-auto flex max-w-md items-center justify-between">
         <div class="leading-tight">
@@ -575,7 +575,7 @@
   <div id="chatPop" class="fixed bottom-24 right-4 z-[55] hidden w-72 rounded-2xl border border-line bg-white p-4 shadow-md md:bottom-6">
     <div class="flex items-start justify-between">
       <div class="flex items-center gap-2">
-        <span class="flex h-8 w-8 items-center justify-center rounded-full water-grad text-white text-xs font-semibold">RP</span>
+        <span class="flex h-8 w-8 items-center justify-center rounded-full deck-wash text-white text-xs font-semibold">MCP</span>
         <div class="leading-tight">
           <p class="text-sm font-semibold text-ink">Midwest Container Pools</p>
           <p class="text-[11px] text-emerald-600">● Typically replies fast</p>
@@ -603,20 +603,21 @@
   ];
   const currentModel = () => MODELS.find(m => m.id === state.config.model) || MODELS[0];
   const basePrice = () => currentModel().price;
-  const DEPOSIT = 5000;              // FLAGGED: MCP publishes no deposit figure - confirm with Sheldon
-  // MCP advertises a fully customizable exterior with no color fee, so color is $0.
+  const DEPOSIT = 5000;
+  // The exterior finish is included in the price, so color adds nothing.
   const STD_COLOR_FEE = 0;
-  const CUSTOM_COLOR_FEE = 0;        // custom color included (FLAGGED for Sheldon)
-  const SHIP_RATE_PER_MILE = 4.85;   // Sheldon's rate; broker runs ~$4.00 and he keeps the spread
+  const CUSTOM_COLOR_FEE = 0;
+  const SHIP_RATE_PER_MILE = 4.85;
   const ORIGIN_ZIP = '66048';        // Leavenworth, KS facility
+  const ORIGIN_LAT = 39.3111, ORIGIN_LON = -94.9225;
   const CARD_FEE_APPROX = 150;       // ~3% of deposit, shown as advisory
-  // Terms & Conditions document (client edit #8). Content is IBG-drafted from
-  // midwestcontainerpools.com and must be confirmed/replaced by Midwest
-  // Container Pools' own legal copy — swap the file and the link follows.
   const TERMS_URL = './assets/terms/Midwest-Container-Pools-Terms-and-Conditions.pdf';
+  // Recorded on every order so we know which document the buyer accepted.
+  // Bump this whenever make-terms-pdf.py changes and regenerate the PDF.
+  const TERMS_VERSION = '1.1';
+  const SUPPORT_PHONE = '(913) 705-0591';
 
-  // Add-ons and prices from midwestcontainerpools.com/pricing. Tiles are
-  // MCP-branded placeholders until Sheldon supplies product photography.
+  // Add-ons and prices as published by Midwest Container Pools.
   const UPGRADES = [
     { id:'heat-pump', name:'Cold Weather Electric Heat Pump', price:4656, benefit:'Swim comfortably in cooler months - the foam insulation holds 95%+ of the heat.', img:'./assets/img/upgrades/heat-pump.svg' },
     { id:'gas-heater', name:'Propane or Natural Gas Heater', price:3154, benefit:'Fastest heat-up - on-demand warmth whenever you want it.', img:'./assets/img/upgrades/gas-heater.svg' },
@@ -676,12 +677,11 @@
   // ---- MONEY HELPERS ----
   const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
   const HEX_RE = /^#[0-9a-fA-F]{6}$/;
-  // A custom color only becomes billable once a valid hex is entered, so the
-  // +$499 line and the subtotal stay in sync while the user is mid-typing an
-  // invalid value. (Step 1 already blocks advancing until the hex is valid.)
+  // A custom finish still has to resolve to a valid hex before Step 1 will
+  // advance; this helper is what gates that.
   const customColorBillable = () => state.config.color === 'custom' && HEX_RE.test(state.config.customHex);
-  // Every color choice carries a charge: $399 for any of the four standard
-  // finishes, $499 for custom. No color selected yet -> no fee yet.
+  // The exterior finish - standard or custom - is included in the pool price,
+  // so this returns 0. It stays a function so a future fee has one home.
   function colorFee(){
     if (state.config.color === 'custom') return customColorBillable() ? CUSTOM_COLOR_FEE : 0;
     return state.config.color ? STD_COLOR_FEE : 0;
@@ -693,22 +693,118 @@
   }
   function balance(){ return Math.max(0, subtotal() - DEPOSIT); }
 
-  // ---- SHIPPING SIM (would be a server-side driving-distance call to protect the API key) ----
+  /* ---- FREIGHT ESTIMATE ----
+     Non-binding. The destination ZIP is resolved to the approximate centre of
+     its postal region, then measured against the Leavenworth facility as a
+     great-circle distance with a road factor applied. That keeps the estimate
+     tracking real geography; it is deliberately an approximation, and final
+     freight is quoted by the team before the build is scheduled. */
+  const ROAD_FACTOR = 1.18;   // typical road miles per straight-line mile
+
+  // Approximate centre of each 2-digit postal region: [lat, lon].
+  const ZIP2_CENTER = {
+    '01':[42.30,-72.00], '02':[41.90,-71.20], '03':[43.20,-71.50], '04':[44.60,-69.30],
+    '05':[44.10,-72.70], '06':[41.60,-72.70], '07':[40.75,-74.20], '08':[39.95,-74.70],
+    '10':[40.78,-73.97], '11':[40.75,-73.40], '12':[42.70,-73.90], '13':[43.10,-75.70],
+    '14':[42.90,-78.10], '15':[40.40,-79.90], '16':[41.20,-79.60], '17':[40.25,-76.80],
+    '18':[40.90,-75.50], '19':[39.98,-75.35], '20':[38.90,-77.05], '21':[39.30,-76.60],
+    '22':[38.75,-77.50], '23':[37.20,-77.20], '24':[37.20,-79.80], '25':[38.30,-81.60],
+    '26':[39.30,-80.20], '27':[35.90,-79.30], '28':[35.30,-80.80], '29':[33.90,-80.80],
+    '30':[33.80,-84.30], '31':[32.10,-82.60], '32':[29.90,-81.90], '33':[27.30,-81.40],
+    '34':[27.60,-81.60], '35':[33.40,-86.80], '36':[31.70,-86.40], '37':[36.00,-85.90],
+    '38':[35.10,-89.60], '39':[32.10,-89.90], '40':[38.00,-84.90], '41':[38.40,-83.30],
+    '42':[37.10,-86.90], '43':[40.00,-82.80], '44':[41.30,-81.50], '45':[39.60,-84.20],
+    '46':[40.10,-86.10], '47':[38.90,-86.80], '48':[42.60,-83.60], '49':[42.90,-85.70],
+    '50':[41.60,-93.60], '51':[42.20,-95.80], '52':[41.90,-91.50], '53':[43.20,-88.30],
+    '54':[44.70,-89.50], '55':[44.95,-93.20], '56':[45.60,-95.20], '57':[44.20,-99.40],
+    '58':[47.30,-100.60],'59':[46.80,-110.40],'60':[41.90,-88.10], '61':[41.00,-89.60],
+    '62':[38.90,-89.40], '63':[38.60,-90.50], '64':[39.20,-94.40], '65':[37.40,-92.60],
+    '66':[39.00,-95.40], '67':[37.90,-98.20], '68':[41.10,-96.40], '69':[41.30,-101.00],
+    '70':[30.20,-90.80], '71':[32.20,-93.00], '72':[34.80,-92.30], '73':[35.40,-97.50],
+    '74':[36.10,-95.90], '75':[32.90,-96.70], '76':[32.60,-97.50], '77':[29.90,-95.40],
+    '78':[29.80,-98.20], '79':[32.60,-101.80],'80':[39.70,-104.90],'81':[38.60,-106.60],
+    '82':[42.60,-106.60],'83':[43.80,-114.20],'84':[40.50,-111.90],'85':[33.40,-112.00],
+    '86':[35.10,-111.70],'87':[35.30,-106.30],'88':[32.60,-105.90],'89':[37.80,-116.00],
+    '90':[34.05,-118.25],'91':[34.15,-118.20],'92':[33.40,-117.20],'93':[35.50,-119.40],
+    '94':[37.70,-122.20],'95':[38.20,-121.60],'96':[40.60,-122.30],'97':[44.30,-122.60],
+    '98':[47.40,-122.10],'99':[47.50,-119.50],
+  };
+
+  // Finer detail where a 2-digit region covers a lot of ground.
+  const ZIP3_CENTER = {
+    // New York
+    '100':[40.78,-73.97],'104':[40.85,-73.87],'105':[41.05,-73.80],'106':[41.05,-73.75],
+    '107':[41.10,-73.85],'108':[41.00,-73.75],'109':[41.25,-74.00],
+    '117':[40.85,-72.90],'118':[40.80,-72.60],'119':[40.95,-72.40],
+    // Florida
+    '320':[30.35,-81.90],'321':[28.60,-80.90],'322':[30.15,-81.70],'323':[30.45,-84.30],
+    '324':[30.20,-85.70],'325':[30.45,-87.20],'326':[29.65,-82.35],'327':[28.80,-81.30],
+    '328':[28.50,-81.40],'329':[28.10,-80.65],
+    '330':[26.10,-80.20],'331':[25.80,-80.25],'332':[25.80,-80.25],'333':[26.15,-80.15],
+    '334':[26.70,-80.10],'335':[27.95,-82.45],'336':[27.95,-82.45],'337':[27.80,-82.65],
+    '338':[28.05,-81.95],'339':[26.60,-81.85],'341':[26.15,-81.75],'342':[27.35,-82.55],
+    '344':[29.65,-82.35],'346':[28.35,-82.55],'347':[28.55,-81.75],'349':[27.50,-80.35],
+    // Texas
+    '733':[30.27,-97.74],'750':[32.85,-96.85],'751':[32.85,-96.85],'752':[32.78,-96.80],
+    '753':[32.78,-96.80],'757':[32.35,-95.30],'759':[31.34,-94.73],
+    '760':[32.75,-97.35],'761':[32.75,-97.35],'762':[33.20,-97.10],'763':[33.90,-98.50],
+    '765':[31.55,-97.15],'766':[31.55,-97.15],'767':[31.10,-97.35],'768':[32.45,-99.73],
+    '769':[31.45,-100.45],'770':[29.76,-95.37],'771':[29.76,-95.37],'772':[29.90,-95.20],
+    '773':[30.05,-95.45],'774':[29.60,-95.65],'775':[29.50,-95.10],'776':[30.08,-94.10],
+    '777':[30.08,-94.10],'778':[30.65,-96.35],'779':[28.98,-96.00],
+    '780':[29.42,-98.49],'781':[29.42,-98.49],'782':[29.42,-98.49],'783':[27.80,-97.40],
+    '784':[27.80,-97.40],'785':[26.20,-98.23],'786':[30.27,-97.74],'787':[30.27,-97.74],
+    '788':[29.60,-98.60],'789':[30.10,-97.60],'790':[35.22,-101.83],'791':[35.22,-101.83],
+    '792':[34.43,-100.20],'793':[33.58,-101.86],'794':[33.58,-101.86],'795':[32.45,-99.73],
+    '796':[32.45,-99.73],'797':[31.99,-102.08],'798':[31.76,-106.49],'799':[31.76,-106.49],
+    // California
+    '900':[34.05,-118.25],'902':[33.95,-118.35],'904':[34.02,-118.45],'906':[33.80,-118.15],
+    '907':[33.77,-118.19],'908':[33.77,-118.19],'910':[34.15,-118.13],'911':[34.15,-118.13],
+    '913':[34.20,-118.55],'914':[34.20,-118.45],'915':[34.18,-118.30],'916':[34.20,-118.45],
+    '917':[34.05,-117.95],'918':[34.05,-118.10],'919':[32.85,-116.90],'920':[32.72,-117.16],
+    '921':[32.72,-117.16],'922':[33.72,-116.37],'923':[34.10,-117.30],'924':[34.10,-117.30],
+    '925':[33.95,-117.40],'926':[33.75,-117.87],'927':[33.75,-117.87],'928':[33.75,-117.87],
+    '930':[34.20,-119.18],'931':[34.42,-119.70],'932':[35.37,-119.02],'933':[35.37,-119.02],
+    '934':[34.95,-120.44],'935':[35.05,-118.15],'936':[36.75,-119.77],'937':[36.75,-119.77],
+    '938':[36.33,-119.29],'939':[36.68,-121.65],'940':[37.77,-122.42],'941':[37.77,-122.42],
+    '943':[37.44,-122.14],'944':[37.50,-122.28],'945':[37.80,-122.27],'946':[37.80,-122.27],
+    '947':[37.87,-122.27],'948':[37.94,-122.35],'949':[37.97,-122.53],'950':[37.34,-121.89],
+    '951':[37.34,-121.89],'952':[37.96,-121.29],'953':[37.64,-120.99],'954':[38.44,-122.71],
+    '955':[40.80,-124.16],'956':[38.58,-121.49],'957':[38.58,-121.49],'958':[38.58,-121.49],
+    '959':[39.15,-121.60],'960':[40.59,-122.39],'961':[39.53,-119.81],
+    // Michigan Upper Peninsula, northern Minnesota, and a few other long reaches
+    '498':[46.50,-87.50],'499':[46.30,-85.70],'558':[46.79,-92.10],'567':[48.10,-96.20],
+    '660':[39.20,-94.90],'661':[39.05,-94.75],'598':[48.20,-114.30],
+  };
+
+  function isContinentalZip(zip){
+    const p2 = zip.slice(0,2), n3 = parseInt(zip.slice(0,3),10);
+    if (p2 === '09') return false;                 // military - Europe/Middle East
+    if (n3 >= 6 && n3 <= 9) return false;          // Puerto Rico, US Virgin Islands
+    if (n3 === 340) return false;                  // military - Americas
+    if (n3 >= 962 && n3 <= 969) return false;      // military - Pacific, Hawaii, Guam
+    if (n3 >= 995) return false;                   // Alaska
+    return true;
+  }
+
+  function greatCircleMiles(lat1, lon1, lat2, lon2){
+    const R = 3958.8, rad = d => d * Math.PI / 180;
+    const dLat = rad(lat2 - lat1), dLon = rad(lon2 - lon1);
+    const a = Math.sin(dLat/2) ** 2 +
+              Math.cos(rad(lat1)) * Math.cos(rad(lat2)) * Math.sin(dLon/2) ** 2;
+    return 2 * R * Math.asin(Math.min(1, Math.sqrt(a)));
+  }
+
+  // Returns { ok, miles, amount, reason }. ok:false means no figure should be
+  // shown - never fall back to a number we cannot stand behind.
   function estimateShipping(zip){
-    if (!/^\d{5}$/.test(zip)) return { miles:0, amount:0 };
-    // Deterministic plausible "distance" from the Leavenworth KS origin 66048.
-    // Monotonic mapping (no modulo wraparound): the larger the ZIP delta, the
-    // larger the distance, scaled into a believable 50-1400 mile range. This keeps
-    // a genuinely far ZIP from collapsing to an implausibly small mileage.
-    const z = parseInt(zip,10);
-    const origin = parseInt(ORIGIN_ZIP,10);
-    const raw = Math.abs(z - origin);
-    // US ZIP codes span ~00501-99950, so the max delta from 66048 is ~66400.
-    const MAX_DELTA = 66400;
-    const frac = Math.min(1, raw / MAX_DELTA);
-    let miles = Math.round(50 + frac * 1350);
-    const amount = Math.round(miles * SHIP_RATE_PER_MILE);
-    return { miles, amount };
+    const none = r => ({ ok:false, miles:0, amount:0, reason:r });
+    if (!/^\d{5}$/.test(zip)) return none('invalid');
+    if (!isContinentalZip(zip)) return none('offroad');
+    const c = ZIP3_CENTER[zip.slice(0,3)] || ZIP2_CENTER[zip.slice(0,2)];
+    if (!c) return none('unknown');
+    const miles = Math.max(25, Math.round(greatCircleMiles(ORIGIN_LAT, ORIGIN_LON, c[0], c[1]) * ROAD_FACTOR / 5) * 5);
+    return { ok:true, miles, amount: Math.round(miles * SHIP_RATE_PER_MILE), reason:'' };
   }
 
   /* ============================================================
@@ -775,7 +871,7 @@
 
     const installs = INSTALL_TYPES.map(t => `
       <button type="button" data-install="${t.id}" data-selected="${state.config.installType===t.id}"
-        class="selcard pickcard flex w-full items-start gap-3 border border-line bg-white p-4 text-left transition hover:shadow-sm focusable" aria-pressed="${state.config.installType===t.id}">
+        class="optcard pickcard flex w-full items-start gap-3 border border-line bg-white p-4 text-left transition hover:shadow-sm focusable" aria-pressed="${state.config.installType===t.id}">
         <span>
           <span class="block text-[15px] font-semibold text-ink">${t.name}</span>
           <span class="mt-0.5 block text-[13px] text-muted">${t.note}</span>
@@ -789,7 +885,7 @@
       const on = !!state.upgrades[u.id];
       return `
       <button type="button" data-upg="${u.id}" data-selected="${on}"
-        class="selcard pickcard group flex w-full items-center gap-4 overflow-hidden border border-line bg-white p-3 text-left transition hover:shadow-sm focusable" aria-pressed="${on}">
+        class="optcard pickcard group flex w-full items-center gap-4 overflow-hidden border border-line bg-white p-3 text-left transition hover:shadow-sm focusable" aria-pressed="${on}">
         <img src="${u.img}" alt="${u.name}" loading="lazy" class="h-20 w-28 shrink-0 rounded-lg bg-recessed object-cover sm:h-24 sm:w-36" onerror="this.style.display='none'" />
         <span class="min-w-0 flex-1">
           <span class="flex items-center justify-between gap-2">
@@ -804,7 +900,7 @@
 
     const noUpgradesCard = `
       <button type="button" data-noupg data-selected="${state.noUpgrades}"
-        class="selcard pickcard flex w-full items-center gap-4 border border-line bg-white p-3 text-left transition hover:shadow-sm focusable" aria-pressed="${state.noUpgrades}">
+        class="optcard pickcard flex w-full items-center gap-4 border border-line bg-white p-3 text-left transition hover:shadow-sm focusable" aria-pressed="${state.noUpgrades}">
         <span class="flex h-20 w-28 shrink-0 items-center justify-center rounded-lg bg-recessed sm:h-24 sm:w-36">
           <svg class="h-8 w-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>
         </span>
@@ -823,7 +919,7 @@
       const on = m.id === state.config.model;
       return `
       <button type="button" role="radio" aria-checked="${on}" data-model="${m.id}" data-selected="${on}"
-        class="selcard pickcard flex w-full flex-col overflow-hidden border border-line bg-white text-left transition hover:shadow-sm focusable">
+        class="optcard pickcard flex w-full flex-col overflow-hidden border border-line bg-white text-left transition hover:shadow-sm focusable">
         <img src="${m.img}" alt="${m.name}" loading="lazy" class="h-28 w-full object-cover" onerror="this.style.display='none'" />
         <span class="flex flex-1 flex-col p-3">
           <span class="flex flex-wrap items-baseline justify-between gap-x-2">
@@ -884,7 +980,7 @@
         <div class="grid grid-cols-4 gap-2.5">${colors}</div>
 
         <button type="button" data-color="custom" data-selected="${isCustom}"
-          class="selcard mt-3 flex w-full items-center justify-between rounded-xl border border-line bg-white p-4 text-left transition hover:shadow-sm focusable" aria-pressed="${isCustom}">
+          class="optcard mt-3 flex w-full items-center justify-between rounded-xl border border-line bg-white p-4 text-left transition hover:shadow-sm focusable" aria-pressed="${isCustom}">
           <span class="flex items-center gap-3">
             <span class="flex h-5 w-5 items-center justify-center rounded-full border-2 ${isCustom?'border-brand-blue':'border-line'}"><span class="h-2.5 w-2.5 rounded-full ${isCustom?'bg-brand-blue':'bg-transparent'}"></span></span>
             <span class="text-[15px] font-medium text-ink">Custom color</span>
@@ -908,7 +1004,7 @@
         </div>
       </fieldset>
 
-      <!-- upgrades (client edit: on the same page as exterior colors, Tesla-style) -->
+      <!-- optional equipment, chosen on the same page as the exterior finish -->
       <fieldset class="mt-7">
         <legend class="text-[15px] font-semibold text-ink">Upgrades</legend>
         <p class="mb-3 text-[13px] text-muted">Optional equipment — add any combination, or choose No upgrades.</p>
@@ -987,19 +1083,47 @@
     const d = state.delivery;
     const hasZip = /^\d{5}$/.test(state.delivery.zip);
     const ship = estimateShipping(state.delivery.zip);
+    const isDelivery = d.fulfillment === 'delivery';
     state.shipping = { estimateAmount: ship.amount, distanceMiles: ship.miles };
 
+    // price === null means "not known yet" and renders as a muted dash, so an
+    // un-estimated delivery can never read as free.
     const opt = (id,title,sub,price) => {
       const on = state.delivery.fulfillment===id;
+      const priceCell = price === null
+        ? `<span class="text-[14px] font-semibold text-muted">—</span>`
+        : `<span class="text-[14px] font-semibold tabular-nums ${price===0?'text-emerald-600':'text-ink'}">${price===0?'$0':fmt(price)}</span>`;
       return `
       <button type="button" data-fulfill="${id}" data-selected="${on}"
-        class="selcard pickcard flex w-full items-center justify-between gap-3 border border-line bg-white p-4 text-left transition hover:shadow-sm focusable" aria-pressed="${on}">
+        class="optcard pickcard flex w-full items-center justify-between gap-3 border border-line bg-white p-4 text-left transition hover:shadow-sm focusable" aria-pressed="${on}">
         <span class="flex items-start gap-3">
           <span><span class="block text-[15px] font-semibold text-ink">${title}</span><span class="mt-0.5 block text-[13px] text-muted">${sub}</span></span>
         </span>
-        <span class="text-[14px] font-semibold tabular-nums ${price===0?'text-emerald-600':'text-ink'}">${price===0?'$0':fmt(price)}</span>
+        ${priceCell}
       </button>`;
     };
+
+    // What the estimate panel says, in the three states it can be in.
+    let shipMeta, shipAmt, shipNote;
+    if (!isDelivery) {
+      shipMeta = d.fulfillment === 'pickup'
+        ? 'No freight — collect from our Leavenworth, KS facility'
+        : 'No freight — you are arranging your own transport';
+      shipAmt = '$0';
+      shipNote = 'Switch to “Ship to my address” below if you would like us to quote freight.';
+    } else if (ship.ok) {
+      shipMeta = `~${ship.miles.toLocaleString()} mi · $${SHIP_RATE_PER_MILE.toFixed(2)}/mi`;
+      shipAmt = fmt(ship.amount);
+      shipNote = 'Freight is billed separately and is <strong class="font-medium text-ink">not included</strong> in your order total. We confirm the final figure before your build is scheduled.';
+    } else if (ship.reason === 'offroad') {
+      shipMeta = 'Outside our flatbed delivery area';
+      shipAmt = '—';
+      shipNote = `Hawaii, Alaska, Puerto Rico and overseas addresses ship by barge or container vessel. Call us at ${SUPPORT_PHONE} and we will quote it for you.`;
+    } else {
+      shipMeta = `Enter a 5-digit ZIP · $${SHIP_RATE_PER_MILE.toFixed(2)}/mi`;
+      shipAmt = '—';
+      shipNote = 'Freight is billed separately and is <strong class="font-medium text-ink">not included</strong> in your order total. We confirm the final figure before your build is scheduled.';
+    }
 
     stepRoot().innerHTML = `
       ${backBtn()}
@@ -1022,12 +1146,11 @@
                 Delivery from Leavenworth, KS
                 <span class="rounded-full border border-line bg-white px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted">non-binding estimate</span>
               </p>
-              <p class="mt-0.5 text-[12px] text-muted tabular-nums" id="shipMeta">${hasZip ? `~${ship.miles.toLocaleString()} mi · $${SHIP_RATE_PER_MILE.toFixed(2)}/mi` : `Enter a 5-digit ZIP · $${SHIP_RATE_PER_MILE.toFixed(2)}/mi`}</p>
+              <p class="mt-0.5 text-[12px] text-muted tabular-nums" id="shipMeta">${shipMeta}</p>
             </div>
-            <p class="text-2xl font-semibold tabular-nums text-ink" id="shipAmt">${hasZip ? fmt(ship.amount) : '—'}</p>
+            <p class="text-2xl font-semibold tabular-nums text-ink" id="shipAmt">${shipAmt}</p>
           </div>
-          <p class="mt-3 border-t border-line pt-3 text-[12px] text-muted">Freight is billed/arranged separately and is <strong class="font-medium text-ink">not included</strong> in your order total. Final freight is quoted before shipping.
-          <!-- real build: this distance call runs server-side to protect the mapping API key --></p>
+          <p class="mt-3 border-t border-line pt-3 text-[12px] text-muted">${shipNote}</p>
         </div>
       </div>
 
@@ -1035,7 +1158,11 @@
       <fieldset class="mt-6">
         <legend class="mb-3 text-[15px] font-semibold text-ink">How should we get it to you?</legend>
         <div class="grid grid-cols-1 gap-2.5">
-          ${opt('delivery','Ship to my address', hasZip ? `Estimated above · ~${ship.miles.toLocaleString()} mi from Leavenworth` : 'Enter a ZIP above for your estimate', ship.amount)}
+          ${opt('delivery','Ship to my address',
+                ship.ok ? `Estimated above · ~${ship.miles.toLocaleString()} mi from Leavenworth`
+                        : (ship.reason === 'offroad' ? `Call ${SUPPORT_PHONE} — we quote this route by hand`
+                                                     : 'Enter a ZIP above for your estimate'),
+                ship.ok ? ship.amount : null)}
           ${opt('pickup','Pick up in Leavenworth','Collect from our Leavenworth, KS facility.',0)}
           ${opt('self',"I'll arrange my own freight",'We load; you handle transport.',0)}
         </div>
@@ -1100,15 +1227,33 @@
     });
     bind('f-name','name'); bind('f-addr','address'); bind('f-phone','phone'); bind('f-email','email', v=>v.trim()); bind('f-notes','siteNotes');
   }
+  // Field-keyed so a failure can mark the offending input and move focus to it,
+  // rather than printing a message at the bottom of a six-field form.
+  const STEP2_CHECKS = [
+    ['zip3',    d => /^\d{5}$/.test(d.zip),                              'Enter a 5-digit destination ZIP.'],
+    ['f-name',  d => d.name.trim().length >= 2,                          'Please enter your full name.'],
+    ['f-addr',  d => d.address.trim().length >= 5,                       'Please enter a delivery address we can route a flatbed to.'],
+    ['f-phone', d => d.phone.replace(/\D/g,'').length >= 10,             'Enter a 10-digit phone number so we can reach you about delivery.'],
+    ['f-email', d => /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(d.email),      'Please enter a valid email address.'],
+  ];
   function validateStep2(){
-    const d = state.delivery; const msg = document.getElementById('step2Msg');
-    let err='';
-    if (!/^\d{5}$/.test(d.zip)) err='Enter a 5-digit destination ZIP.';
-    else if (!d.name.trim()) err='Please enter your full name.';
-    else if (!d.address.trim()) err='Please enter a delivery address.';
-    else if (!/\d/.test(d.phone)) err='Please enter a phone number.';
-    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) err='Please enter a valid email.';
-    if (err){ msg.textContent=err; msg.classList.remove('hidden'); return false; }
+    const d = state.delivery, msg = document.getElementById('step2Msg');
+    STEP2_CHECKS.forEach(([id]) => {
+      const el = document.getElementById(id);
+      if (el){ el.removeAttribute('aria-invalid'); el.removeAttribute('aria-describedby'); }
+    });
+    const failed = STEP2_CHECKS.find(([, ok]) => !ok(d));
+    if (failed){
+      const [id, , text] = failed;
+      msg.textContent = text; msg.classList.remove('hidden');
+      const el = document.getElementById(id);
+      if (el){
+        el.setAttribute('aria-invalid','true');
+        el.setAttribute('aria-describedby','step2Msg');
+        el.focus({ preventScroll:false });
+      }
+      return false;
+    }
     msg.classList.add('hidden'); return true;
   }
 
@@ -1138,13 +1283,34 @@
       ${stepHeader(3, 'Review your order', 'Everything before you choose how to pay.')}
 
       <div class="rounded-2xl border border-line bg-white p-5">
-        <p class="text-[13px] font-medium text-muted">Configuration</p>
+        <div class="flex items-center justify-between">
+          <p class="text-[13px] font-medium text-muted">Configuration</p>
+          <button type="button" data-edit-step="1" class="text-[12px] font-medium text-brand-blue hover:text-brand-blueDark focusable">Edit</button>
+        </div>
         <div class="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5 text-[13px]">
-          <span class="text-muted">Install</span><span class="text-right font-medium text-ink">${installName}</span>
-          <span class="text-muted">Color</span><span class="text-right font-medium text-ink">${colorName}</span>
-          <span class="text-muted">Fulfillment</span><span class="text-right font-medium text-ink">${fulfillName}</span>
-          <span class="text-muted">Ship to</span><span class="text-right font-medium text-ink">${state.delivery.zip||'—'}</span>
+          <span class="text-muted">Install</span><span class="text-right font-medium text-ink">${escapeHtml(installName)}</span>
+          <span class="text-muted">Color</span><span class="text-right font-medium text-ink">${escapeHtml(colorName)}</span>
+          <span class="text-muted">Fulfillment</span><span class="text-right font-medium text-ink">${escapeHtml(fulfillName)}</span>
           ${state.noUpgrades ? '<span class="text-muted">Upgrades</span><span class="text-right font-medium text-ink">None selected</span>' : ''}
+        </div>
+
+        <div class="mt-4 border-t border-line pt-4">
+          <div class="flex items-center justify-between">
+            <p class="text-[13px] font-medium text-muted">${state.delivery.fulfillment==='delivery' ? 'Deliver to' : 'Your details'}</p>
+            <button type="button" data-edit-step="2" class="text-[12px] font-medium text-brand-blue hover:text-brand-blueDark focusable">Edit</button>
+          </div>
+          <div class="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5 text-[13px]">
+            <span class="text-muted">Name</span><span class="text-right font-medium text-ink">${escapeHtml(state.delivery.name||'—')}</span>
+            ${state.delivery.fulfillment==='delivery'
+              ? `<span class="text-muted">Address</span><span class="text-right font-medium text-ink">${escapeHtml(state.delivery.address||'—')}</span>`
+              : ''}
+            <span class="text-muted">ZIP</span><span class="text-right font-medium tabular-nums text-ink">${escapeHtml(state.delivery.zip||'—')}</span>
+            <span class="text-muted">Phone</span><span class="text-right font-medium tabular-nums text-ink">${escapeHtml(state.delivery.phone||'—')}</span>
+            <span class="text-muted">Email</span><span class="text-right font-medium text-ink break-all">${escapeHtml(state.delivery.email||'—')}</span>
+            ${state.delivery.siteNotes.trim()
+              ? `<span class="text-muted">Site notes</span><span class="text-right text-ink">${escapeHtml(state.delivery.siteNotes)}</span>`
+              : ''}
+          </div>
         </div>
 
         <div class="mt-4 border-t border-line pt-2">${rows}</div>
@@ -1168,7 +1334,7 @@
             <span class="text-[14px] font-medium text-ink">Deposit due today</span>
             <span class="text-2xl font-semibold tabular-nums text-ink"><span class="text-[#a06a00]">${fmt(DEPOSIT)}</span></span>
           </div>
-          <p class="mt-1 text-[11px] text-muted">Your ${fmt(DEPOSIT)} deposit reserves your build and is applied to your total. See the Terms and Conditions for the deposit and refund policy.</p>
+          <p class="mt-1 text-[11px] text-muted">Your ${fmt(DEPOSIT)} deposit reserves your build and is applied to your total. How the deposit, balance and cancellation work is set out in the Terms and Conditions.</p>
         </div>
 
         <div class="mt-3 flex items-center justify-between text-[14px]">
@@ -1192,7 +1358,6 @@
       ${continueBar('Continue to payment', false)}
     `;
   }
-  // "Seen in real yards" gallery and "Common questions" FAQ removed per client edit #7 (2026-07-16).
 
   /* -------- STEP 4: PAYMENT & TERMS -------- */
   function renderStep4(){
@@ -1200,7 +1365,7 @@
       const on = state.payment.method === m.id;
       const sunPill = m.recommended ? `<span class="ml-2 rounded-full bg-brand-sun px-2 py-0.5 text-[10px] font-semibold text-ink">Recommended — no card fees</span>` : '';
       return `
-      <div class="pm-card selcard rounded-xl border border-line bg-white transition" data-open="${on}" data-selected="${on}">
+      <div class="paytile optcard rounded-xl border border-line bg-white transition" data-open="${on}" data-selected="${on}">
         <button type="button" data-pm="${m.id}" class="flex w-full items-center gap-3 border-l-[3px] p-4 text-left focusable ${on?'border-l-brand-blue bg-[#eaf6fa]':'border-l-transparent'}" aria-pressed="${on}">
           <span class="flex h-9 w-9 shrink-0 items-center justify-center border border-line text-ink [&>svg]:h-5 [&>svg]:w-5">${m.icon}</span>
           <span class="min-w-0 flex-1">
@@ -1234,7 +1399,7 @@
         <p class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-muted">
           <span>5-year structural · 3-year equipment warranty</span>
           <span class="text-line">·</span>
-          <span>$5,000 deposit is refundable per terms</span>
+          <span>Deposit, refund and cancellation policy in the Terms</span>
         </p>
         <p class="mt-1.5 text-[12px] text-muted">Prefer a human? Call <a href="tel:+19137050591" class="font-medium text-brand-blue hover:text-brand-blueDark">(913) 705-0591</a>.</p>
       </div>
@@ -1341,13 +1506,11 @@
         </div>`;
       case 'wire': return `
         <div class="rounded-xl border border-line bg-recessed p-4">
-          <div class="grid grid-cols-2 gap-y-2 text-[13px]">
-            <span class="text-muted">Bank</span><span class="text-right font-medium text-ink">Midwest Bank</span>
-            <span class="text-muted">Routing</span><span class="text-right font-mono text-ink">063•••••21</span>
-            <span class="text-muted">Account</span><span class="text-right font-mono text-ink">••••••8847</span>
+          <p class="text-[13px] text-ink">We send wire instructions directly rather than publishing our bank details on a web page. Place your order and your instructions arrive by email, or call us at <a href="tel:+19137050591" class="font-medium text-brand-blue">${SUPPORT_PHONE}</a> and we'll read them to you.</p>
+          <div class="mt-3 grid grid-cols-2 gap-y-2 text-[13px]">
             <span class="text-muted">Reference</span><span class="text-right font-mono text-ink">${ref}</span>
           </div>
-          <p class="mt-2 text-[11px] text-muted">Include the reference so we can match your deposit. Your build slot reserves now.</p>
+          <p class="mt-2 text-[11px] text-muted">Include the reference on your wire so we can match your deposit. Your build slot reserves now.</p>
         </div>`;
       case 'check': return `
         <div class="rounded-xl border border-line bg-recessed p-4">
@@ -1359,7 +1522,7 @@
       case 'financing': return `
         <div class="rounded-xl border border-line bg-recessed p-4">
           <p class="text-[13px] text-ink">Apply with HFS Financial, our financing partner. Checking your rate is a soft credit check and will not affect your score. Your build slot reserves now and confirms once financing funds your payment.</p>
-          <a href="https://www.hfsfinancial.net/promo/65cfafcd8f9d691395b70e36" target="_blank" rel="noopener noreferrer"
+          <a href="https://www.hfsfinancial.net/" target="_blank" rel="noopener noreferrer"
             class="mt-3 inline-flex items-center gap-2 rounded-xl bg-brand-blue px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-blueDark focusable">
             Apply with HFS Financial
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg>
@@ -1376,37 +1539,58 @@
   // (Zelle / Wire / Check). It is a single deposit, so the same reference must
   // appear wherever the buyer pays — the Step 4 payment panel and the thank-you screen.
   function orderRef(){
-    if (!state._ref) state._ref = 'RP-' + Math.random().toString(36).slice(2,7).toUpperCase() + '-' + Date.now().toString().slice(-4);
+    if (!state._ref) state._ref = 'MCP-' + Math.random().toString(36).slice(2,7).toUpperCase() + '-' + Date.now().toString().slice(-4);
     return state._ref;
   }
 
-  // The old standalone "Review draft terms" step (step 7 of 7) was removed per
-  // client edit #8: terms are now an external linked document with a required
-  // checkbox on the payment step, like a standard online checkout.
+  // Terms are an external linked document with a required checkbox on the
+  // payment step, like a standard online checkout.
 
   /* -------- SUBMIT -> ORDER RECORD -------- */
   function submitOrder(){
-    const m = PAYMENT_METHODS.find(x=>x.id===state.payment.method);
-    const instant = m && !m.manual;
-    const status = instant ? 'deposit_paid' : 'pending_payment';
     const now = new Date();
+    const model = currentModel();
+    const isDelivery = state.delivery.fulfillment === 'delivery';
+    const stdColor = STD_COLORS.find(c => c.id === state.config.color);
 
+    // No processor is connected, so this record must never claim a capture.
+    // Every order lands as 'submitted' and only a real processor callback may
+    // move it forward.
     const order = {
-      orderId: 'RP-' + now.getFullYear() + '-' + Math.random().toString(36).slice(2,8).toUpperCase(),
+      orderId: 'MCP-' + now.getFullYear() + '-' + Math.random().toString(36).slice(2,8).toUpperCase(),
       createdAt: now.toISOString(),
-      status,
+      status: 'submitted',
       customer: { name: state.delivery.name, email: state.delivery.email, phone: state.delivery.phone },
       delivery: { address: state.delivery.address, zip: state.delivery.zip, installType: state.config.installType, siteNotes: state.delivery.siteNotes },
       config: {
-        baseModel: state.config.baseModel,
+        baseModel: model.id,
+        baseModelName: model.name,
+        baseModelDims: model.dims,
+        basePrice: model.price,
         color: state.config.color === 'custom' ? state.config.customHex : state.config.color,
+        colorName: state.config.color === 'custom' ? ('Custom ' + state.config.customHex) : (stdColor ? stdColor.name : null),
         upgrades: UPGRADES.filter(u=>state.upgrades[u.id]).map(u=>({id:u.id,name:u.name,price:u.price})),
         upgradesDeclined: state.noUpgrades,
       },
       pricing: { subtotal: subtotal(), colorFee: colorFee(), depositAmount: DEPOSIT, balanceAmount: balance() },
-      shipping: { estimateAmount: state.delivery.fulfillment==='delivery'?state.shipping.estimateAmount:0, distanceMiles: state.shipping.distanceMiles, fulfillment: state.delivery.fulfillment },
-      payment: { method: state.payment.method, depositCaptured: instant, processorRef: instant ? ('pay_'+Math.random().toString(36).slice(2,12)) : orderRef() },
-      consent: { termsAccepted: true, timestamp: now.toISOString() },
+      shipping: {
+        estimateAmount: isDelivery ? state.shipping.estimateAmount : 0,
+        distanceMiles: isDelivery ? state.shipping.distanceMiles : 0,
+        fulfillment: state.delivery.fulfillment,
+      },
+      payment: {
+        method: state.payment.method,
+        depositCaptured: false,
+        processorRef: null,
+        processorStatus: 'awaiting_processor',
+        buyerReference: orderRef(),
+      },
+      consent: {
+        termsAccepted: state.consent.termsAccepted,
+        termsVersion: TERMS_VERSION,
+        termsUrl: TERMS_URL,
+        timestamp: now.toISOString(),
+      },
     };
     state.order = order;
     renderThankYou(order);
@@ -1415,59 +1599,64 @@
   /* -------- THANK YOU (status-aware) -------- */
   function renderThankYou(order){
     document.getElementById('mobileBar').classList.add('hidden');
-    const paid = order.status === 'deposit_paid';
     const m = PAYMENT_METHODS.find(x=>x.id===order.payment.method);
 
-    const manualInstr = !paid ? `
-      <div class="mt-6 rounded-2xl border border-line bg-white p-5 text-left">
-        <p class="text-[14px] font-semibold text-ink">Finish your deposit (${m.name})</p>
-        <div class="mt-3">${paymentPanel(order.payment.method)}</div>
-      </div>` : '';
+    const nextStep = m && m.manual
+      ? `Send your ${fmt(DEPOSIT)} deposit using the details below and quote reference ${order.payment.buyerReference}.`
+      : `We'll email you a secure link to complete your ${fmt(DEPOSIT)} deposit. Nothing has been charged yet.`;
 
-    const emailPreview = paid ? `
+    const depositInstr = `
+      <div class="mt-6 rounded-2xl border border-line bg-white p-5 text-left">
+        <p class="text-[14px] font-semibold text-ink">Completing your deposit${m ? ` (${escapeHtml(m.name)})` : ''}</p>
+        <p class="mt-1 text-[13px] text-muted">${nextStep}</p>
+        ${m && m.manual ? `<div class="mt-3">${paymentPanel(order.payment.method)}</div>` : ''}
+      </div>`;
+
+    const emailPreview = `
       <div class="mt-6 overflow-hidden rounded-2xl border border-line bg-white text-left">
         <div class="border-b border-line bg-recessed px-5 py-3 text-[12px] text-muted">
           <span class="font-medium text-ink">Midwest Container Pools</span> &lt;Sheldon@midwestcontainerpools.com&gt; → ${escapeHtml(order.customer.email||'you@email.com')}
-          <div class="mt-0.5 font-medium text-ink">Your order is placed — deposit being processed 🎉</div>
+          <div class="mt-0.5 font-medium text-ink">We've got your order — here's what happens next</div>
         </div>
         <div class="p-5 text-[13px] text-ink">
           <p>Hi ${escapeHtml(order.customer.name||'there')},</p>
-          <p class="mt-2">Thank you for your order. Your <strong>${fmt(DEPOSIT)}</strong> deposit for <strong>${currentModel().name}</strong> is being processed and your build slot is reserved (order <span class="font-mono">${order.orderId}</span>).</p>
-          <p class="mt-2 text-muted">Next: we'll confirm your build and ship window and coordinate offload. Estimated balance before shipping: <span class="tabular-nums">${fmt(order.pricing.balanceAmount)}</span> (+ tax on final invoice).</p>
+          <p class="mt-2">Thank you for your order for the <strong>${escapeHtml(order.config.baseModelName)}</strong> (order <span class="font-mono">${order.orderId}</span>). Your build slot is held while we set up your <strong>${fmt(DEPOSIT)}</strong> deposit.</p>
+          <p class="mt-2 text-muted">Next: we'll confirm your deposit, then your build and ship window, and coordinate offload. Estimated balance before shipping: <span class="tabular-nums">${fmt(order.pricing.balanceAmount)}</span> (+ tax on final invoice).</p>
         </div>
-      </div>` : '';
+      </div>`;
 
     document.getElementById('app').innerHTML = `
-      <section class="water-grad">
+      <section class="deck-wash">
         <div class="mx-auto max-w-2xl px-5 py-14 text-center sm:py-20">
           <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/95 shadow-md">
             <svg class="h-7 w-7 text-brand-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true" focusable="false"><path d="m5 12 5 5 9-9"/></svg>
           </span>
           <h1 id="thankYouHeading" tabindex="-1" class="mt-5 text-3xl font-semibold tracking-tight2 text-white outline-none sm:text-4xl">
-            ${paid ? "Your build is scheduled." : "Your slot is reserved."}
+            Thank you — your order is in.
           </h1>
           <p class="mx-auto mt-3 max-w-md text-[15px] text-white/85">
-            ${paid
-              ? `Your ${fmt(DEPOSIT)} deposit is being processed. Watch your inbox — your order confirmation is on its way.`
-              : `Your build slot is held. It's confirmed the moment your ${fmt(DEPOSIT)} deposit is received — here's how to finish.`}
+            Your build slot is held. It's confirmed the moment your ${fmt(DEPOSIT)} deposit is received — here's how to finish.
           </p>
           <div class="mx-auto mt-5 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-[13px] text-white backdrop-blur">
             <span class="opacity-80">Order</span><span class="font-mono">${order.orderId}</span>
             <span class="opacity-50">·</span>
-            <span class="rounded-full ${paid?'bg-emerald-400/90 text-emerald-950':'bg-brand-sun text-ink'} px-2 py-0.5 text-[11px] font-semibold">${paid?'Order placed':'Awaiting deposit'}</span>
+            <span class="rounded-full bg-brand-sun text-ink px-2 py-0.5 text-[11px] font-semibold">Awaiting deposit</span>
           </div>
         </div>
       </section>
 
       <div class="mx-auto max-w-2xl px-5 pb-24 -mt-8">
         <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-md">
-          <img src="./assets/img/pool-hero.jpg" alt="A Midwest Container Pool" loading="lazy" class="h-44 w-full object-cover sm:h-56" />
+          <img src="${(MODELS.find(x=>x.id===order.config.baseModel)||MODELS[0]).img}" alt="${escAttr(order.config.baseModelName)}" loading="lazy" class="h-44 w-full object-cover sm:h-56" />
           <div class="p-5">
             <div class="flex items-center justify-between text-[14px]">
+              <span class="text-muted">${escapeHtml(order.config.baseModelName)}</span><span class="text-[12px] tabular-nums text-muted">${escapeHtml(order.config.baseModelDims)}</span>
+            </div>
+            <div class="mt-2 flex items-center justify-between border-t border-line pt-2 text-[14px]">
               <span class="text-muted">Subtotal</span><span class="font-medium tabular-nums text-ink">${fmt(order.pricing.subtotal)}</span>
             </div>
             <div class="mt-1 flex items-center justify-between text-[14px]">
-              <span class="text-muted">Deposit ${paid?'paid':'due'}</span><span class="font-semibold tabular-nums text-ink">${fmt(DEPOSIT)}</span>
+              <span class="text-muted">Deposit due</span><span class="font-semibold tabular-nums text-ink">${fmt(DEPOSIT)}</span>
             </div>
             <div class="mt-1 flex items-center justify-between text-[14px]">
               <span class="text-muted">Estimated balance before shipping</span><span class="tabular-nums text-muted">${fmt(order.pricing.balanceAmount)}</span>
@@ -1477,9 +1666,9 @@
         </div>
 
         ${emailPreview}
-        ${manualInstr}
+        ${depositInstr}
 
-        <p class="mt-6 text-center text-[13px] text-muted">A confirmation email is on its way${order.customer.email?` to <span class="text-ink">${escapeHtml(order.customer.email)}</span>`:''}. Questions? Call <a href="tel:+19137050591" class="font-medium text-brand-blue">(913) 705-0591</a>.</p>
+        <p class="mt-6 text-center text-[13px] text-muted">A confirmation email is on its way${order.customer.email?` to <span class="text-ink">${escapeHtml(order.customer.email)}</span>`:''}. Questions? Call <a href="tel:+19137050591" class="font-medium text-brand-blue">${SUPPORT_PHONE}</a>.</p>
 
         <div class="mt-8 text-center">
           <button id="restartBtn" class="text-[13px] font-medium text-brand-blue hover:text-brand-blueDark">Start a new order</button>
@@ -1518,17 +1707,17 @@
     const showShip = state.delivery.fulfillment==='delivery' && state.shipping.estimateAmount>0;
 
     const rows = lines.map(([n,p,hl]) => `
-      <div class="lineitem-in flex items-start justify-between gap-3 py-2 text-[13px]">
+      <div class="row-enter flex items-start justify-between gap-3 py-2 text-[13px]">
         <span class="text-muted">${n}</span>
         <span class="shrink-0 font-medium tabular-nums ${hl?'text-ink':'text-muted'}">${p}</span>
       </div>`).join('<div class="border-t border-line/70"></div>');
 
     return `
       <div class="flex items-center gap-3 pb-4">
-        <img src="./assets/img/pool-above-deck.jpg" alt="" loading="lazy" class="h-12 w-16 rounded-lg object-cover" onerror="this.style.display='none'" />
+        <img src="${currentModel().img}" alt="" loading="lazy" class="h-12 w-16 rounded-lg object-cover" onerror="this.style.display='none'" />
         <div class="leading-tight">
           <p class="text-[13px] font-semibold text-ink">${currentModel().name}</p>
-          <p class="text-[12px] text-muted">20×8×4 ${installName?'· '+installName:''}</p>
+          <p class="text-[12px] text-muted">${currentModel().dims} ${installName?'· '+installName:''}</p>
         </div>
       </div>
 
@@ -1588,6 +1777,10 @@
     // tick animation on change
     if (ns!==lastSub || nb!==lastBal){
       document.querySelectorAll('[data-anim]').forEach(el=>{ el.classList.add('price-tick'); setTimeout(()=>el.classList.remove('price-tick'),200); });
+      // The rail and the mobile bar both repaint silently, so announce the new
+      // running total for anyone not watching the screen.
+      const live = document.getElementById('liveTotal');
+      if (live) live.textContent = `Order total ${fmt(ns)}. Deposit due today ${fmt(DEPOSIT)}.`;
       lastSub=ns; lastBal=nb;
     }
   }
@@ -1650,8 +1843,15 @@
       if (!validateCurrent()) return;
       if (state.step < state.maxStep) goTo(state.step+1,'fwd');
     });
-    const back = stepRoot().querySelector('[data-back]');
-    if (back) back.addEventListener('click', () => { if (state.step>1) goTo(state.step-1,'back'); });
+    stepRoot().querySelectorAll('[data-back]').forEach(back =>
+      back.addEventListener('click', () => { if (state.step>1) goTo(state.step-1,'back'); }));
+    // Inline "Edit" links on the review step jump straight back to the step
+    // that owns the field the buyer wants to change.
+    stepRoot().querySelectorAll('[data-edit-step]').forEach(btn =>
+      btn.addEventListener('click', () => {
+        const target = parseInt(btn.getAttribute('data-edit-step'),10);
+        if (target >= 1 && target < state.step) goTo(target,'back');
+      }));
   }
 
   function bindAccordions(scope){
@@ -1720,6 +1920,15 @@
     const trigger = drawerPrevFocus || document.getElementById('viewOrderBtn');
     if (trigger && typeof trigger.focus === 'function') trigger.focus();
     drawerPrevFocus = null;
+  }
+  // The drawer, its scrim and its trigger are all md:hidden. Growing past the
+  // breakpoint while it is open would hide every control while the page stayed
+  // scroll-locked and aria-hidden, so close it on the way through.
+  if (window.matchMedia){
+    const wide = window.matchMedia('(min-width: 768px)');
+    const onWide = e => { if (e.matches) closeDrawer(); };
+    if (wide.addEventListener) wide.addEventListener('change', onWide);
+    else if (wide.addListener) wide.addListener(onWide);
   }
   document.getElementById('viewOrderBtn').addEventListener('click', openDrawer);
   document.getElementById('closeDrawerBtn').addEventListener('click', closeDrawer);
