@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 260" width="360" height="260" role="img" aria-label="Propane / Natural Gas Heater">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0" stop-color="#0e7490"/><stop offset="1" stop-color="#0c1a27"/>
-  </linearGradient></defs>
-  <rect width="360" height="260" rx="12" fill="url(#g)"/>
-  <path d="M180 108c26 30 40 50 40 72a40 40 0 1 1-80 0c0-22 14-42 40-72z" fill="#fff" opacity=".95"/><path d="M180 150c12 16 18 26 18 36a18 18 0 1 1-36 0c0-10 6-20 18-36z" fill="#22d3ee"/>
-  <text x="180" y="228" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="600" fill="#ffffff">Propane / Natural Gas</text>
-  <text x="180" y="248" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#ffffff" opacity=".85">Heater</text>
-</svg>

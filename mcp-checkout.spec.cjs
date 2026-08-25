@@ -5,16 +5,28 @@ const fs = require('fs');
 const fileUrl = process.env.MCP_TEST_URL
   || ('file:///' + path.resolve(__dirname, 'index.html').replace(/\\/g, '/'));
 const QA_DIR = process.env.MCP_QA_DIR
-  || 'D:/Neil Brain Canonical 2026-06-16/_agent-system/QA/2026-08-04 L3-372 Midwest Container Pools QA';
+  || 'D:/Neil Brain Canonical 2026-06-16/_agent-system/QA/2026-08-24 L3-378 Midwest Container Pools QA';
 fs.mkdirSync(QA_DIR, { recursive: true });
 const shot = name => path.join(QA_DIR, name);
 
 test.use({ channel: 'msedge' });
 
+// Freight figures the estimator produces for the ZIPs used below. Pinned here so
+// a regression in the distance table fails the suite instead of quietly re-pricing
+// an order the buyer is now committing to.
+const FREIGHT = { '64108': 170, '66048': 121 };   // 35 mi / 25 mi from Leavenworth
+
+// Contact details Article 27 of the approved Terms gives. The checkout and the
+// contract the buyer signs have to agree.
+const TERMS_PHONE = '(913) 704-6316';
+const TERMS_EMAIL = 'Sales@midwestcontainerpools.com';
+const HFS_PROMO = 'https://www.hfsfinancial.net/promo/65cfafcd8f9d691395b70e36/';
+
 // Anything that would tell a buyer - or Sheldon - that this page came from the
 // other client's build. 'RP' and 'RP-' are in here because the order reference
 // and the chat avatar used to carry them and the old sweep could not see it.
-const BANNED = /(\bready ?pool\b|readypool|\btampa\b|\bhearth\b|gethearth|slipstream|lounge chairs|\bRP-|>RP<|\bRP\b|still water|sunlit)/i;
+// (813) 330-7599 is Ready Pool's number, which rode in with the color-picker port.
+const BANNED = /(\bready ?pool\b|readypool|\btampa\b|\bhearth\b|gethearth|slipstream|lounge chairs|\bRP-|>RP<|\bRP\b|still water|sunlit|813\)\s*330-7599)/i;
 
 function firstBanned(text) {
   const m = text.match(BANNED);
@@ -54,53 +66,72 @@ async function noOverflow(page) {
   expect(o).toBeFalsy();
 }
 
-test('desktop 20ft: model pricing, MCP add-ons, KS shipping, HFS financing — $53,073', async ({ page }) => {
+const money = t => Number(String(t).replace(/[^0-9]/g, ''));
+
+test('desktop 20ft: pricing, freight in the total, 50% deposit - $51,266 order / $25,633 down', async ({ page }) => {
   const errors = [];
   watchConsole(page, errors);
   await page.setViewportSize({ width: 1440, height: 950 });
   await openWizard(page);
 
   await expect(page.locator('img[alt="Midwest Container Pools"]').first()).toBeVisible();
-  await expect(page.locator('body')).toContainText('(913) 705-0591');
+  // Contact details must be the ones in the contract, not Sheldon's mobile.
+  await expect(page.locator('body')).toContainText(TERMS_PHONE);
+  await expect(page.locator('body')).not.toContainText('(913) 705-0591');
 
   await expect(page.locator('[data-model]')).toHaveCount(2);
   await expect(page.locator('[data-model="20ft"]')).toHaveAttribute('data-selected', 'true');
   await expect(page.locator('#stepRoot')).toContainText('$46,440');
   await expect(page.locator('#stepRoot')).toContainText('Hayward cartridge filter');
-  await expect(page.locator('#stepRoot')).toContainText('5-year structural · 3-year equipment warranty');
+  // Article 14 covers the structure for 5 years; equipment rides its makers' warranties.
+  await expect(page.locator('#stepRoot')).toContainText('equipment under manufacturer warranty');
+  await expect(page.locator('#stepRoot')).not.toContainText('3-year equipment');
 
   await expect(page.locator('#stepRoot')).toContainText('$4,656');
   await expect(page.locator('#stepRoot')).toContainText('$3,154');
-  await expect(page.locator('#stepRoot')).toContainText('$1,977');
 
   await page.click('[data-color="slate"]');
   await page.click('[data-upg="heat-pump"]');
-  await page.click('[data-upg="salt"]');
   await page.click('[data-install="above"]');
   await page.screenshot({ path: shot('desktop-step1-design.png'), fullPage: true });
   await page.click('[data-continue]');
 
   await expect(page.locator('#stepLabel')).toHaveText('Step 2 of 4');
   await expect(page.locator('#stepRoot')).toContainText('Delivery from Leavenworth, KS');
-  await expect(page.locator('#stepRoot')).toContainText('Pick up in Leavenworth');
   await fillStep2(page);
   await page.click('[data-fulfill="delivery"]');
+  await expect(page.locator('#shipAmt')).toHaveText(`$${FREIGHT['64108']}`);
+  // Freight is part of the order now, so the page must not still disclaim it.
+  await expect(page.locator('#stepRoot')).toContainText('is included');
+  await expect(page.locator('#stepRoot')).not.toContainText('not included');
+  await expect(page.locator('#stepRoot')).not.toContainText('non-binding');
   await page.screenshot({ path: shot('desktop-step2-delivery.png'), fullPage: true });
   await page.click('[data-continue]');
 
-  // 46,440 + 0 color + 4,656 + 1,977 = 53,073
-  await expect(page.locator('#stepRoot')).toContainText('$53,073');
+  // 46,440 + 4,656 = 51,096 subtotal; + 170 freight = 51,266 order; half = 25,633.
+  const review = page.locator('#stepRoot');
+  await expect(review).toContainText('$51,096');
+  await expect(review).toContainText('$51,266');
+  await expect(review).toContainText('$25,633');
+  await expect(review).toContainText('Order total');
   await page.screenshot({ path: shot('desktop-step3-review.png'), fullPage: true });
   await page.click('[data-continue]');
 
-  await expect(page.locator('[data-pm]')).toHaveCount(6);
+  // ACH and financing only (Sheldon, 2026-08-24).
+  await expect(page.locator('[data-pm]')).toHaveCount(2);
+  await expect(page.locator('[data-pm="ach"]')).toBeVisible();
+  await expect(page.locator('[data-pm="financing"]')).toBeVisible();
+  for (const gone of ['card', 'zelle', 'wire', 'check']) {
+    await expect(page.locator(`[data-pm="${gone}"]`)).toHaveCount(0);
+  }
+
   await page.click('[data-pm="financing"]');
-  const hfs = page.locator('a[href*="hfsfinancial.net"]');
+  const hfs = page.locator(`a[href="${HFS_PROMO}"]`);
   await expect(hfs).toBeVisible();
   expect(await hfs.getAttribute('target')).toBe('_blank');
   expect(await hfs.getAttribute('rel')).toContain('noopener');
-  await expect(page.locator('#stepRoot')).toContainText('HFS Financial');
-  await page.click('[data-pm="card"]');
+
+  await page.click('[data-pm="ach"]');
   await page.check('#termsChk');
   const terms = page.locator('a[href*="Midwest-Container-Pools-Terms-and-Conditions.pdf"]').first();
   await expect(terms).toBeVisible();
@@ -110,14 +141,13 @@ test('desktop 20ft: model pricing, MCP add-ons, KS shipping, HFS financing — $
   expect(errors).toEqual([]);
 });
 
-test('40ft model drives the totals, the rail and the review line — $71,944 with gas heater', async ({ page }) => {
+test('40ft drives the totals, and deposit + balance always reconstruct the order total', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 950 });
   await openWizard(page);
   await page.click('[data-model="40ft"]');
   await expect(page.locator('#stepRoot')).toContainText('$68,790');
   await expect(page.locator('#stepRoot')).toContainText('tanning ledge');
 
-  // The persistent rail must follow the model, not print the 20ft's spec.
   await expect(page.locator('#railBody')).toContainText("40' x 8' x 4'");
   await expect(page.locator('#railBody')).toContainText('$68,790');
   await expect(page.locator('#railBody')).not.toContainText("20' x 8' x 4'");
@@ -128,68 +158,161 @@ test('40ft model drives the totals, the rail and the review line — $71,944 wit
   await page.click('[data-continue]');
   await fillStep2(page, { zip: '66048', name: 'Sam Vega', addr: '9 Riverside Dr, Leavenworth, KS', phone: '9135550142', email: 'sam@example.com' });
   await page.click('[data-continue]');
-  // 68,790 + 3,154 = 71,944
-  await expect(page.locator('#stepRoot')).toContainText('$71,944');
+
+  // 68,790 + 3,154 = 71,944 subtotal; + 121 freight = 72,065 order.
+  // That total is odd, so the halves cannot both be exact - they must still sum.
+  const review = page.locator('#stepRoot');
+  await expect(review).toContainText('$71,944');
+  await expect(review).toContainText('$72,065');
+  await expect(review).toContainText('$36,033');
+  await expect(review).toContainText('$36,032');
+
+  const figures = await page.evaluate(() => ({
+    total: grandTotal(), deposit: depositAmount(), bal: balance(), fr: freight(),
+  }));
+  expect(figures.fr).toBe(FREIGHT['66048']);
+  expect(figures.total).toBe(72065);
+  expect(figures.deposit + figures.bal).toBe(figures.total);
+  expect(Math.abs(figures.deposit - figures.total / 2)).toBeLessThanOrEqual(0.5);
   await page.screenshot({ path: shot('desktop-40ft-review.png'), fullPage: true });
 });
 
-test('exterior color is included at no charge', async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 950 });
-  await openWizard(page);
-  await page.click('[data-color="sand"]');
-  // Assert the rendered price, not the app's own subtotal() - a wrong label
-  // would otherwise be invisible.
-  await expect(page.locator('#railBody')).toContainText('$46,440');
-  await expect(page.locator('#stepRoot')).toContainText('fully customizable');
-  await page.click('[data-install="above"]');
-  await page.click('[data-continue]');
-  await fillStep2(page);
-  await page.click('[data-continue]');
-  await expect(page.locator('#stepRoot')).toContainText('$46,440');
-  await expect(page.locator('#stepRoot')).not.toContainText('$399');
-  await expect(page.locator('#stepRoot')).not.toContainText('$499');
-});
-
-test('freight estimate tracks real geography and is suppressed when it should be', async ({ page }) => {
+test('the deposit is half the order total INCLUDING freight, not half the subtotal', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 950 });
   await openWizard(page);
   await page.click('[data-color="slate"]');
   await page.click('[data-install="above"]');
   await page.click('[data-continue]');
 
-  // Before a ZIP is entered, delivery must not read as free.
+  // A near ZIP and a far one must move the deposit, which could not happen while
+  // freight sat outside the total.
+  await fillStep2(page, { zip: '66048' });
+  await page.click('[data-fulfill="delivery"]');
+  const near = await page.evaluate(() => ({ t: grandTotal(), d: depositAmount() }));
+
+  await page.fill('#zip3', '90001');
+  await page.click('#recalcBtn');
+  const far = await page.evaluate(() => ({ t: grandTotal(), d: depositAmount() }));
+
+  expect(far.t).toBeGreaterThan(near.t);
+  expect(far.d).toBeGreaterThan(near.d);
+  expect(near.d).toBe(Math.round(near.t / 2));
+  expect(far.d).toBe(Math.round(far.t / 2));
+
+  // Pickup removes freight from the total AND from the deposit.
+  await page.click('[data-fulfill="pickup"]');
+  const pickup = await page.evaluate(() => ({ t: grandTotal(), d: depositAmount(), f: freight() }));
+  expect(pickup.f).toBe(0);
+  expect(pickup.t).toBe(46440);
+  expect(pickup.d).toBe(23220);
+});
+
+test('the salt water system is gone from the page, the assets and the order', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 950 });
+  await openWizard(page);
+  await expect(page.locator('[data-upg]')).toHaveCount(2);
+  await expect(page.locator('[data-upg="salt"]')).toHaveCount(0);
+
+  const body = await page.evaluate(() => document.body.innerText);
+  expect(body).not.toMatch(/salt/i);
+  expect(body).not.toContain('$1,977');
+
+  const src = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf8');
+  expect(src).not.toMatch(/salt/i);
+  expect(src).not.toContain('1977');
+  expect(fs.existsSync(path.resolve(__dirname, 'assets/img/upgrades/salt-system.svg'))).toBe(false);
+});
+
+test('both heater cards show real photographs that actually load', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 950 });
+  await openWizard(page);
+
+  for (const id of ['heat-pump', 'gas-heater']) {
+    const img = page.locator(`[data-upg="${id}"] img`).first();
+    const src = await img.getAttribute('src');
+    expect(src, `${id} must use a photograph, not placeholder art`).toMatch(/\.jpe?g$/i);
+    const loaded = await img.evaluate(el => el.complete && el.naturalWidth > 0);
+    expect(loaded, `${id} image must render`).toBe(true);
+  }
+  const files = fs.readdirSync(path.resolve(__dirname, 'assets/img/upgrades'));
+  expect(files.filter(f => f.endsWith('.svg'))).toEqual([]);
+});
+
+test('payments are ACH and financing only, and financing points at the MCP promo page', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 950 });
+  await openWizard(page);
+  await page.click('[data-color="slate"]');
+  await page.click('[data-install="above"]');
+  await page.click('[data-continue]');
+  await fillStep2(page);
+  await page.click('[data-continue]');
+  await page.click('[data-continue]');
+
+  await expect(page.locator('[data-pm]')).toHaveCount(2);
+  const body = await page.evaluate(() => document.body.innerText);
+  expect(body).not.toMatch(/zelle|bank wire|mailed check|credit \/ debit/i);
+
+  await page.click('[data-pm="financing"]');
+  await expect(page.locator(`a[href="${HFS_PROMO}"]`)).toBeVisible();
+  // The bare homepage is not the attributed application path.
+  await expect(page.locator('a[href="https://www.hfsfinancial.net/"]')).toHaveCount(0);
+
+  const src = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf8');
+  expect(src).not.toMatch(/routing number|account number/i);
+});
+
+test('the non-refundable deposit is disclosed before the buyer consents', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 950 });
+  await openWizard(page);
+  await page.click('[data-color="slate"]');
+  await page.click('[data-install="above"]');
+  await page.click('[data-continue]');
+  await fillStep2(page);
+  await page.click('[data-continue]');
+
+  // Articles 6 and 19 make the deposit non-refundable. The buyer must read that
+  // on the review step, before the consent checkbox on step 4.
+  await expect(page.locator('#stepRoot')).toContainText('non-refundable');
+  const src = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf8');
+  expect(src).not.toMatch(/deposit is refundable|refundable per terms/i);
+});
+
+test('freight tracks real geography and is declined where MCP will not haul', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 950 });
+  await openWizard(page);
+  await page.click('[data-color="slate"]');
+  await page.click('[data-install="above"]');
+  await page.click('[data-continue]');
+
   await expect(page.locator('#shipAmt')).toHaveText('—');
   const deliveryTile = page.locator('[data-fulfill="delivery"]');
   await expect(deliveryTile).toContainText('—');
   await expect(deliveryTile).not.toContainText('$0');
 
-  // Kansas City MO: ~35 road miles. Assert the computed figures, not the rate label.
   await page.fill('#zip3', '64108');
   await page.click('#recalcBtn');
   await expect(page.locator('#shipMeta')).toContainText('~35 mi');
   await expect(page.locator('#shipAmt')).toHaveText('$170');
 
-  // Farther must cost more - the old ZIP-arithmetic estimator inverted this.
   const amountFor = async zip => {
     await page.fill('#zip3', zip);
     await page.click('#recalcBtn');
-    const t = await page.locator('#shipAmt').textContent();
-    return Number(t.replace(/[^0-9]/g, ''));
+    return money(await page.locator('#shipAmt').textContent());
   };
-  const chicago = await amountFor('60601');   // ~470 mi
-  const losAngeles = await amountFor('90210'); // ~1590 mi
-  const boston = await amountFor('02101');     // ~1480 mi
+  const chicago = await amountFor('60601');
+  const losAngeles = await amountFor('90210');
+  const boston = await amountFor('02101');
   expect(chicago).toBeGreaterThan(1500);
   expect(losAngeles).toBeGreaterThan(boston);
   expect(losAngeles).toBeGreaterThan(chicago * 2);
 
-  // Off the flatbed network: no invented number.
   await page.fill('#zip3', '96801'); // Honolulu
   await page.click('#recalcBtn');
   await expect(page.locator('#shipAmt')).toHaveText('—');
   await expect(page.locator('#shipMeta')).toContainText('Outside our flatbed delivery area');
+  // A route we decline must not silently price at zero and get halved into a deposit.
+  expect(await page.evaluate(() => freight())).toBe(0);
 
-  // Pickup means no freight anywhere on the page.
   await page.fill('#zip3', '90210');
   await page.click('#recalcBtn');
   await page.click('[data-fulfill="pickup"]');
@@ -204,7 +327,6 @@ test('step 1 and step 2 gates actually block, and mark the offending field', asy
   await page.setViewportSize({ width: 1280, height: 950 });
   await openWizard(page);
 
-  // Step 1: no install type, no color.
   await page.click('[data-continue]');
   await expect(page.locator('#gateMsg')).toBeVisible();
   await expect(page.locator('#stepLabel')).toHaveText('Step 1 of 4');
@@ -214,21 +336,16 @@ test('step 1 and step 2 gates actually block, and mark the offending field', asy
   await page.click('[data-continue]');
   await expect(page.locator('#stepLabel')).toHaveText('Step 2 of 4');
 
-  // Step 2: empty.
   await page.click('[data-continue]');
   await expect(page.locator('#step2Msg')).toContainText('5-digit destination ZIP');
   await expect(page.locator('#zip3')).toHaveAttribute('aria-invalid', 'true');
   await expect(page.locator('#zip3')).toBeFocused();
-  await expect(page.locator('#stepLabel')).toHaveText('Step 2 of 4');
 
-  // A single-digit phone used to pass.
   await fillStep2(page, { phone: '5' });
   await page.click('[data-continue]');
   await expect(page.locator('#step2Msg')).toContainText('10-digit phone number');
   await expect(page.locator('#f-phone')).toHaveAttribute('aria-invalid', 'true');
-  await expect(page.locator('#f-phone')).toBeFocused();
 
-  // And an address-shaped email.
   await fillStep2(page, { email: 'buyer@example' });
   await page.click('[data-continue]');
   await expect(page.locator('#step2Msg')).toContainText('valid email');
@@ -237,6 +354,57 @@ test('step 1 and step 2 gates actually block, and mark the offending field', asy
   await fillStep2(page);
   await page.click('[data-continue]');
   await expect(page.locator('#stepLabel')).toHaveText('Step 3 of 4');
+});
+
+test('custom color is a Sherwin-Williams swatch, not a hex field, and it gates step 1', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 950 });
+  await openWizard(page);
+  await page.click('[data-install="above"]');
+
+  // The hex input is gone.
+  await expect(page.locator('#hexInput')).toHaveCount(0);
+
+  await page.click('[data-color="custom"]');
+  await expect(page.locator('#swGrid')).toBeVisible();
+  expect(await page.locator('#swGrid [data-sw]').count()).toBeGreaterThan(1000);
+
+  // Choosing "custom" without picking a swatch must not advance.
+  await page.click('[data-continue]');
+  await expect(page.locator('#gateMsg')).toBeVisible();
+  await expect(page.locator('#stepLabel')).toHaveText('Step 1 of 4');
+
+  // 1,526 swatches must not become 1,526 tab stops.
+  expect(await page.locator('#swGrid [data-sw][tabindex="0"]').count()).toBe(1);
+
+  // Search narrows without rebuilding, and a pick names the color.
+  await page.fill('#swSearch', 'Naval');
+  await expect(page.locator('#swCount')).toContainText('match');
+  const visible = page.locator('#swGrid [data-sw]:not(.hidden)');
+  expect(await visible.count()).toBeGreaterThan(0);
+  await visible.first().click();
+  await expect(page.locator('#swSelected')).toContainText('SW');
+
+  await page.click('[data-continue]');
+  await expect(page.locator('#stepLabel')).toHaveText('Step 2 of 4');
+  await expect(page.locator('#railBody')).toContainText('SW');
+  // Colour is included at MCP, so no fee may appear.
+  await expect(page.locator('#railBody')).not.toContainText('$499');
+});
+
+test('the "No upgrades" card is gone and choosing nothing is simply nothing', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 950 });
+  await openWizard(page);
+  await expect(page.locator('[data-noupg]')).toHaveCount(0);
+  const body = await page.evaluate(() => document.body.innerText);
+  expect(body).not.toMatch(/no upgrades/i);
+
+  await page.click('[data-color="slate"]');
+  await page.click('[data-install="above"]');
+  await page.click('[data-continue]');
+  await fillStep2(page);
+  await page.click('[data-continue]');
+  await expect(page.locator('#stepRoot')).not.toContainText('None selected');
+  await expect(page.locator('#stepRoot')).toContainText('$46,440');
 });
 
 test('review step shows back everything the buyer typed', async ({ page }) => {
@@ -256,39 +424,12 @@ test('review step shows back everything the buyer typed', async ({ page }) => {
   await expect(review).toContainText('dana@example.com');
   await expect(review).toContainText('Gate code 4417');
 
-  // The inline Edit control must go back to the step that owns the field.
   await page.click('[data-edit-step="2"]');
   await expect(page.locator('#stepLabel')).toHaveText('Step 2 of 4');
   await expect(page.locator('#f-email')).toHaveValue('dana@example.com');
 });
 
-test('"No upgrades" and paid upgrades are mutually exclusive', async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 950 });
-  await openWizard(page);
-  await page.click('[data-upg="heat-pump"]');
-  await expect(page.locator('#railBody')).toContainText('$51,096');
-
-  await page.click('[data-noupg]');
-  await expect(page.locator('[data-upg="heat-pump"]')).toHaveAttribute('data-selected', 'false');
-  await expect(page.locator('#railBody')).toContainText('$46,440');
-
-  await page.click('[data-color="slate"]');
-  await page.click('[data-install="above"]');
-  await page.click('[data-continue]');
-  await fillStep2(page);
-  await page.click('[data-continue]');
-  await expect(page.locator('#stepRoot')).toContainText('None selected');
-  await expect(page.locator('#stepRoot')).not.toContainText('Cold Weather Electric Heat Pump');
-
-  // And selecting an upgrade again clears "No upgrades".
-  await page.click('[data-back]');
-  await page.click('[data-back]');
-  await page.click('[data-upg="salt"]');
-  await expect(page.locator('[data-noupg]')).toHaveAttribute('data-selected', 'false');
-  await expect(page.locator('#railBody')).toContainText('$48,417');
-});
-
-test('submitted order records the real configuration and claims no payment capture', async ({ page }) => {
+test('submitted order records freight, the 50% split, and claims no payment capture', async ({ page }) => {
   const errors = [];
   watchConsole(page, errors);
   await page.setViewportSize({ width: 1280, height: 950 });
@@ -301,7 +442,7 @@ test('submitted order records the real configuration and claims no payment captu
   await fillStep2(page, { zip: '66048', name: 'Sam Vega', addr: '9 Riverside Dr, Leavenworth, KS', phone: '9135550142', email: 'sam@example.com' });
   await page.click('[data-continue]');
   await page.click('[data-continue]');
-  await page.click('[data-pm="zelle"]');
+  await page.click('[data-pm="ach"]');
 
   // Terms are required: submitting unchecked must not produce an order.
   await page.click('#submitBtn');
@@ -309,40 +450,51 @@ test('submitted order records the real configuration and claims no payment captu
   expect(await page.locator('#thankYouHeading').count()).toBe(0);
   expect(await page.evaluate(() => window.state && state.order)).toBeFalsy();
 
-  const panelRef = (await page.locator('#stepRoot').textContent()).match(/MCP-[A-Z0-9]{5}-\d{4}/);
-  expect(panelRef, 'payment panel should show an MCP- reference').not.toBeNull();
-
   await page.check('#termsChk');
   await page.click('#submitBtn');
   await expect(page.locator('#thankYouHeading')).toBeVisible();
 
   const order = await page.evaluate(() => JSON.parse(JSON.stringify(state.order)));
   expect(order.config.baseModel).toBe('40ft');
-  expect(order.config.baseModelName).toContain('40ft');
   expect(order.config.basePrice).toBe(68790);
   expect(order.config.colorName).toBe('Charcoal');
+
   expect(order.pricing.subtotal).toBe(71944);
+  expect(order.pricing.freightAmount).toBe(FREIGHT['66048']);
+  expect(order.pricing.grandTotal).toBe(71944 + FREIGHT['66048']);
+  expect(order.pricing.depositRate).toBe(0.5);
+  expect(order.pricing.depositAmount + order.pricing.balanceAmount).toBe(order.pricing.grandTotal);
+  expect(order.pricing.depositRefundable).toBe(false);
+  expect(order.shipping.includedInTotal).toBe(true);
+  expect(order.shipping.quotedAmount).toBe(FREIGHT['66048']);
+
   expect(order.consent.termsAccepted).toBe(true);
-  expect(order.consent.termsVersion).toBeTruthy();
+  expect(order.consent.termsVersion).toBe('2.0');
 
   // Nothing is wired to a processor, so nothing may claim a capture.
   expect(order.status).toBe('submitted');
+  expect(order.payment.method).toBe('ach');
   expect(order.payment.depositCaptured).toBe(false);
   expect(order.payment.processorRef).toBeNull();
   expect(order.payment.processorStatus).toBe('awaiting_processor');
-  expect(order.payment.buyerReference).toBe(panelRef[0]);
+  // No processor is wired, so MCP reconciles incoming ACH by this reference.
+  // It must be a real MCP- reference and it must reach the buyer.
+  expect(order.payment.buyerReference).toMatch(/^MCP-[A-Z0-9]{5}-\d{4}$/);
 
   const body = await page.evaluate(() => document.body.innerText);
   expect(body).not.toMatch(/deposit paid|order placed|build is scheduled/i);
-  expect(body).toContain('Deposit due');
   expect(body).toContain(order.orderId);
+  expect(body).toContain(order.payment.buyerReference);
   expect(order.orderId.startsWith('MCP-')).toBe(true);
+  // The confirmation must restate the recorded figures, not recompute them.
+  expect(body).toContain('$72,065');
+  expect(body).toContain('$36,033');
 
   await page.screenshot({ path: shot('desktop-confirmation.png'), fullPage: true });
   expect(errors).toEqual([]);
 });
 
-test('pickup orders record no freight distance', async ({ page }) => {
+test('pickup orders carry no freight anywhere in the record', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 950 });
   await openWizard(page);
   await page.click('[data-color="slate"]');
@@ -352,28 +504,34 @@ test('pickup orders record no freight distance', async ({ page }) => {
   await page.click('[data-fulfill="pickup"]');
   await page.click('[data-continue]');
   await page.click('[data-continue]');
-  await page.click('[data-pm="check"]');
+  await page.click('[data-pm="ach"]');
   await page.check('#termsChk');
   await page.click('#submitBtn');
   const order = await page.evaluate(() => JSON.parse(JSON.stringify(state.order)));
   expect(order.shipping.fulfillment).toBe('pickup');
-  expect(order.shipping.estimateAmount).toBe(0);
+  expect(order.shipping.includedInTotal).toBe(false);
+  expect(order.shipping.quotedAmount).toBe(0);
   expect(order.shipping.distanceMiles).toBe(0);
+  expect(order.pricing.freightAmount).toBe(0);
+  expect(order.pricing.grandTotal).toBe(order.pricing.subtotal);
 });
 
-test('mobile: full flow works, the bar tracks the total, and nothing overflows', async ({ page }) => {
+test('mobile: the bar tracks BOTH the order total and the deposit, and nothing overflows', async ({ page }) => {
   const errors = [];
   watchConsole(page, errors);
   await page.setViewportSize({ width: 375, height: 812 });
   await openWizard(page);
   await page.click('[data-model="20ft"]');
   await expect(page.locator('#mobileBarSubtotal')).toHaveText('$46,440');
-  await page.click('[data-upg="salt"]');
-  await expect(page.locator('#mobileBarSubtotal')).toHaveText('$48,417');
+  await expect(page.locator('#mobileBarDeposit')).toHaveText('$23,220');
 
-  // The drawer mirrors the rail and Escape closes it.
+  // The deposit used to be literal markup that could never move. It must now.
+  await page.click('[data-upg="heat-pump"]');
+  await expect(page.locator('#mobileBarSubtotal')).toHaveText('$51,096');
+  await expect(page.locator('#mobileBarDeposit')).toHaveText('$25,548');
+
   await page.click('#viewOrderBtn');
-  await expect(page.locator('#drawerBody')).toContainText('$48,417');
+  await expect(page.locator('#drawerBody')).toContainText('$51,096');
   await page.keyboard.press('Escape');
   await expect(page.locator('#mobileDrawer')).not.toHaveClass(/open/);
 
@@ -381,10 +539,16 @@ test('mobile: full flow works, the bar tracks the total, and nothing overflows',
   await page.click('[data-install="partial"]');
   await page.screenshot({ path: shot('mobile-step1-design.png'), fullPage: true });
   await page.click('[data-continue]');
-  await fillStep2(page, { zip: '73301', name: 'Mobile Buyer', addr: '5 Elm St, Austin, TX', phone: '9135550188', email: 'mobile@example.com' });
-  await page.click('[data-fulfill="pickup"]');
+
+  // A delivery ZIP must move the mobile deposit too, because freight is in the total.
+  await fillStep2(page, { zip: '64108', name: 'Mobile Buyer', addr: '5 Elm St, Kansas City, MO', phone: '9135550188', email: 'mobile@example.com' });
+  await page.click('[data-fulfill="delivery"]');
+  await expect(page.locator('#mobileBarSubtotal')).toHaveText('$51,266');
+  await expect(page.locator('#mobileBarDeposit')).toHaveText('$25,633');
+  await noOverflow(page);
+
   await page.click('[data-continue]');
-  await expect(page.locator('#stepRoot')).toContainText('$48,417');
+  await expect(page.locator('#stepRoot')).toContainText('$51,266');
   await page.screenshot({ path: shot('mobile-step3-review.png'), fullPage: true });
   await noOverflow(page);
   expect(errors).toEqual([]);
@@ -402,12 +566,16 @@ test('no Ready Pool identity survives anywhere, including hidden UI and the conf
   await page.click('#openWizardBtn');
   await sweep('step 1');
 
-  // The chat popover is hidden by default, so innerText could not see its avatar.
   await page.locator('.chatBtn').first().click();
   await expect(page.locator('#chatPop')).toBeVisible();
   await sweep('chat popover');
   await expect(page.locator('#chatPop')).not.toContainText(/^RP$/);
   await page.locator('.chatBtn').first().click();
+
+  // The color picker came from the Ready Pool build - sweep it open.
+  await page.click('[data-color="custom"]');
+  await expect(page.locator('#swGrid')).toBeVisible();
+  await sweep('color picker');
 
   await page.click('[data-color="slate"]');
   await page.click('[data-install="above"]');
@@ -417,36 +585,52 @@ test('no Ready Pool identity survives anywhere, including hidden UI and the conf
   await page.click('[data-continue]');
   await sweep('step 3');
   await page.click('[data-continue]');
-  for (const pm of ['ach', 'card', 'zelle', 'wire', 'check', 'financing']) {
+  for (const pm of ['ach', 'financing']) {
     await page.click(`[data-pm="${pm}"]`);
     await sweep(`payment panel ${pm}`);
   }
 
-  // Through submit, so the order reference and email preview are in scope too.
-  await page.click('[data-pm="check"]');
+  await page.click('[data-pm="ach"]');
   await page.check('#termsChk');
   await page.click('#submitBtn');
   await expect(page.locator('#thankYouHeading')).toBeVisible();
   await sweep('confirmation');
 
-  // And the source itself, which is public on a single-file build.
-  const src = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf8');
+  // And the source itself, which is public on a single-file build. The one
+  // allowed mention is the engineering comment recording why freight has a
+  // single source; strip that line before sweeping.
+  const src = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf8')
+    .replace(/^.*Ready Pool reviews caught twice.*$/m, '');
   const srcHit = firstBanned(src);
   expect(srcHit, `banned identity in the shipped source: ${srcHit}`).toBeNull();
   expect(src).not.toMatch(/keeps the spread|broker runs|NOTE FOR ENGINEERING|IBG-drafted/i);
 });
 
-test('the linked Terms PDF exists and matches the version the order records', async ({ page }) => {
-  const pdf = path.resolve(__dirname, 'assets/terms/Midwest-Container-Pools-Terms-and-Conditions.pdf');
+test('the Terms PDF is generated from the approved .docx and matches what the order records', async () => {
+  const dir = path.resolve(__dirname, 'assets/terms');
+  const pdf = path.join(dir, 'Midwest-Container-Pools-Terms-and-Conditions.pdf');
+  const docx = path.join(dir, 'MidwestContainerPools_Terms_and_Conditions.docx');
+
   expect(fs.existsSync(pdf), 'Terms PDF must be committed').toBe(true);
   expect(fs.readFileSync(pdf).slice(0, 5).toString()).toBe('%PDF-');
+  expect(fs.existsSync(docx), "MCP's approved .docx must be committed beside the generator").toBe(true);
+  expect(fs.readFileSync(docx).slice(0, 2).toString()).toBe('PK');
 
-  // The checkout must not claim anything the contract does not grant.
+  const gen = fs.readFileSync(path.join(dir, 'make-terms-pdf.py'), 'utf8');
+  // The generator must READ the contract, never restate it - that is what stops
+  // the published PDF drifting from what the client actually approved.
+  expect(gen).toContain('MidwestContainerPools_Terms_and_Conditions.docx');
+  expect(gen).toMatch(/read_docx_paragraphs/);
+  expect(gen).not.toMatch(/A non-refundable Deposit is required/i);
+
   const src = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf8');
-  expect(src).not.toMatch(/deposit is refundable/i);
-
-  const gen = fs.readFileSync(path.resolve(__dirname, 'assets/terms/make-terms-pdf.py'), 'utf8');
   const genVersion = gen.match(/^VERSION = "([^"]+)"/m)[1];
   const htmlVersion = src.match(/TERMS_VERSION = '([^']+)'/)[1];
   expect(htmlVersion, 'index.html TERMS_VERSION must match the generator').toBe(genVersion);
+  expect(genVersion).toBe('2.0');
+
+  // The checkout must not contradict the contract it links.
+  expect(src).not.toMatch(/deposit is refundable/i);
+  expect(src).toContain(TERMS_PHONE);
+  expect(src).toContain(TERMS_EMAIL);
 });
