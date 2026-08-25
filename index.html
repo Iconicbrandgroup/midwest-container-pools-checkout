@@ -701,6 +701,18 @@
   }
   function freight(){ return freightQuote().amount; }
   function grandTotal(){ return subtotal() + freight(); }
+
+  /* ---- SALES TAX (Sheldon via Joshua, 2026-08-24) ----
+     Kansas sales tax applies to Kansas sales; every other state is zero. Tax is
+     settled on the final invoice, so nothing is computed or added to a total
+     here - the checkout only has to say which case the buyer is in.
+     Kansas ZIPs occupy the 660-679 prefixes. Pickup and self-arranged freight
+     both hand the pool over at the Leavenworth facility, so the buyer takes
+     possession in Kansas whatever their home address says. */
+  const isKansasZip = zip => /^6[67]\d{3}$/.test(zip);
+  function taxesInKansas(){
+    return state.delivery.fulfillment !== 'delivery' || isKansasZip(state.delivery.zip);
+  }
   function depositAmount(){ return Math.round(grandTotal() * DEPOSIT_RATE); }
   function balance(){ return Math.max(0, grandTotal() - depositAmount()); }
 
@@ -1475,9 +1487,11 @@
         <!-- tax -->
         <div class="mt-2 flex items-center justify-between text-[13px]">
           <span class="text-muted">Sales tax</span>
-          <span class="font-medium text-muted">Calculated on your final invoice</span>
+          <span class="font-medium text-muted">${taxesInKansas() ? 'Added to your final invoice' : 'Not collected'}</span>
         </div>
-        <p class="mt-0.5 text-[11px] text-muted">Applicable sales tax is calculated based on your delivery address and shown on your final invoice.</p>
+        <p id="taxNotice" class="mt-0.5 text-[11px] leading-relaxed text-muted">${taxesInKansas()
+          ? 'Kansas sales tax applies to this order and is calculated on your final invoice.'
+          : 'This invoice does not include sales tax. Out-of-state buyers are solely responsible for determining, reporting, and remitting any applicable sales or use tax to their state and local taxing authorities.'}</p>
 
         <!-- deposit: half of the order total, freight included -->
         <div class="mt-4 rounded-xl border border-brand-sun2/60 bg-[#fff8e6] p-4">
@@ -1492,7 +1506,7 @@
           <span class="text-muted">Balance, due before your pool ships</span>
           <span class="font-medium tabular-nums text-muted">${fmt(balance())}</span>
         </div>
-        <p class="mt-0.5 text-[11px] text-muted">(+ tax on final invoice)</p>
+        <p class="mt-0.5 text-[11px] text-muted">${taxesInKansas() ? '(+ Kansas sales tax on final invoice)' : ''}</p>
       </div>
 
       ${continueBar('Continue to payment', false)}
@@ -1683,6 +1697,7 @@
         depositAmount: depositAmount(),
         balanceAmount: balance(),
         depositRefundable: false,
+        kansasSalesTax: taxesInKansas(),
       },
       shipping: {
         includedInTotal: isDelivery,
@@ -1733,7 +1748,7 @@
         <div class="p-5 text-[13px] text-ink">
           <p>Hi ${escapeHtml(order.customer.name||'there')},</p>
           <p class="mt-2">Thank you for your order for the <strong>${escapeHtml(order.config.baseModelName)}</strong> (order <span class="font-mono">${order.orderId}</span>). Your build slot is held while we set up your <strong>${fmt(depositAmount())}</strong> deposit.</p>
-          <p class="mt-2 text-muted">Next: we'll confirm your deposit, then your build and ship window, and coordinate offload. Balance, due before your pool ships: <span class="tabular-nums">${fmt(order.pricing.balanceAmount)}</span> (+ tax on final invoice).</p>
+          <p class="mt-2 text-muted">Next: we'll confirm your deposit, then your build and ship window, and coordinate offload. Balance, due before your pool ships: <span class="tabular-nums">${fmt(order.pricing.balanceAmount)}</span>${order.pricing.kansasSalesTax ? ', plus Kansas sales tax on your final invoice' : ''}.</p>
         </div>
       </div>`;
 
@@ -1779,7 +1794,7 @@
             <div class="mt-1 flex items-center justify-between text-[14px]">
               <span class="text-muted">Balance, due before your pool ships</span><span class="tabular-nums text-muted">${fmt(order.pricing.balanceAmount)}</span>
             </div>
-            <p class="mt-1 text-[11px] text-muted">(+ tax on final invoice · freight included in your order total)</p>
+            <p class="mt-1 text-[11px] text-muted">${order.pricing.kansasSalesTax ? '(+ Kansas sales tax on final invoice · freight included in your order total)' : '(freight included in your order total · no sales tax collected)'}</p>
           </div>
         </div>
 
@@ -1864,7 +1879,7 @@
       </div>
 
       <div class="mt-3 flex items-center justify-between text-[13px]">
-        <span class="text-muted">Estimated balance<br/><span class="text-[11px]">(+ tax on final invoice)</span></span>
+        <span class="text-muted">Estimated balance${taxesInKansas() ? '<br/><span class="text-[11px]">(+ Kansas sales tax on final invoice)</span>' : ''}</span>
         <span class="tabular-nums text-muted" data-anim="balance">${fmt(balance())}</span>
       </div>
 

@@ -277,6 +277,54 @@ test('the non-refundable deposit is disclosed before the buyer consents', async 
   expect(src).not.toMatch(/deposit is refundable|refundable per terms/i);
 });
 
+test('sales tax: Kansas only, never added to a total', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 950 });
+  await openWizard(page);
+  await page.click('[data-color="slate"]');
+  await page.click('[data-install="above"]');
+  await page.click('[data-continue]');
+
+  // Kansas City MO is 64108 - one prefix off Kansas, and a common way to get
+  // this wrong. It must read as out-of-state.
+  await fillStep2(page, { zip: '64108' });
+  await page.click('[data-fulfill="delivery"]');
+  await page.click('[data-continue]');
+  await expect(page.locator('#taxNotice')).toContainText('does not include sales tax');
+  await expect(page.locator('#stepRoot')).toContainText('Not collected');
+  const outOfState = await page.evaluate(() => ({ t: grandTotal(), s: subtotal(), f: freight() }));
+  expect(outOfState.t).toBe(outOfState.s + outOfState.f);
+
+  // A Kansas delivery gets the Kansas line instead.
+  await page.click('[data-edit-step="2"]');
+  await page.fill('#zip3', '66048');
+  await page.click('#recalcBtn');
+  await page.click('[data-continue]');
+  await expect(page.locator('#taxNotice')).toContainText('Kansas sales tax applies');
+  await expect(page.locator('#stepRoot')).toContainText('Added to your final invoice');
+
+  // Pickup hands the pool over in Leavenworth, so a California buyer still takes
+  // possession in Kansas - they must not be told tax is not collected.
+  await page.click('[data-edit-step="2"]');
+  await page.fill('#zip3', '90210');
+  await page.click('#recalcBtn');
+  await page.click('[data-fulfill="pickup"]');
+  await page.click('[data-continue]');
+  await expect(page.locator('#taxNotice')).toContainText('Kansas sales tax applies');
+
+  // Whatever the case, tax is settled on the invoice - it never enters a total.
+  const ks = await page.evaluate(() => ({ t: grandTotal(), s: subtotal(), f: freight(), d: depositAmount() }));
+  expect(ks.t).toBe(ks.s + ks.f);
+  expect(ks.d).toBe(Math.round(ks.t / 2));
+
+  await page.click('[data-continue]');
+  await page.click('[data-pm="ach"]');
+  await page.check('#termsChk');
+  await page.click('#submitBtn');
+  const order = await page.evaluate(() => JSON.parse(JSON.stringify(state.order)));
+  expect(order.pricing.kansasSalesTax).toBe(true);
+  expect(order.pricing.grandTotal).toBe(order.pricing.subtotal + order.pricing.freightAmount);
+});
+
 test('freight tracks real geography and is declined where MCP will not haul', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 950 });
   await openWizard(page);
